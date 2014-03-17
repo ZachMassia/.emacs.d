@@ -6,6 +6,7 @@
 	     "M-x"     'smex)
 
 (require 'paredit)
+(require 'init-paredit)
 (fill-keymap paredit-mode-map
              "M-s" 'paredit-splice-sexp
              "M-S" 'paredit-split-sexp
