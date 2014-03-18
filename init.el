@@ -13,7 +13,8 @@
 		    popup
 		    fuzzy
 		    pretty-lambdada
-                    yasnippet)))
+                    yasnippet
+                    yaml-mode)))
   (install-pkg-list basic-pkgs))
 
 ;;;; Appearance --------------------------------------
