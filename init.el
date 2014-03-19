@@ -27,8 +27,10 @@
 (setq initial-scratch-message
       ";; scratch buffer -- hack away!")
 
-(when (eq system-type 'gnu/linux)
-  (set-frame-font "Source Code Pro Medium-10"))
+;; Set the font based on OS.
+(pcase (system-type)
+  ('gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
+  ('windows-nt (set-frame-font "outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
 (if (display-graphic-p) 
     (load-theme 'cyberpunk t))
