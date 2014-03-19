@@ -28,9 +28,9 @@
       ";; scratch buffer -- hack away!")
 
 ;; Set the font based on OS.
-(pcase (system-type)
-  ('gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
-  ('windows-nt (set-frame-font "outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
+(pcase system-type
+  (`gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
+  (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
 (if (display-graphic-p) 
     (load-theme 'cyberpunk t))
@@ -73,6 +73,8 @@
 ;;;; -------------------------------------------------
 (load-elisp-files-in-dir user-emacs-directory "^init-.\*")
 (require 'init-key-bindings)
+
+;;;; -------------------------------------------------
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
