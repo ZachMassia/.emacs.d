@@ -36,6 +36,15 @@
     (load-theme 'cyberpunk t))
 
 ;;;; Misc --------------------------------------------
+;; OSX Stuff
+(when (eq system-type 'darwin)
+  ;; Use command key as meta
+  (setq mac-option-modifier 'super
+        mac-command-modifier 'meta)
+  ;; Make ansi-term play nice with zsh prompt
+  (defadvice ansi-term (after advise-ansi-term-coding-system)
+    (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
+
 ;; Ido
 (require 'ido)
 (ido-mode t)
