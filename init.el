@@ -14,7 +14,8 @@
 		    fuzzy
 		    pretty-lambdada
                     yasnippet
-                    yaml-mode)))
+                    yaml-mode
+                    projectile)))
   (install-pkg-list basic-pkgs))
 
 ;;;; Appearance --------------------------------------
@@ -44,6 +45,10 @@
   ;; Make ansi-term play nice with zsh prompt
   (defadvice ansi-term (after advise-ansi-term-coding-system)
     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
+
+;; Projectile
+(require 'projectile)
+(projectile-global-mode)
 
 ;; Ido
 (require 'ido)
