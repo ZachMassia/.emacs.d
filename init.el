@@ -1,5 +1,9 @@
 (add-to-list 'load-path user-emacs-directory)
 
+(defvar vendor-dir
+     (expand-file-name "vendor" user-emacs-directory))
+(add-to-list 'load-path vendor-dir)
+
 (require 'init-package)
 (require 'init-utils)
 
