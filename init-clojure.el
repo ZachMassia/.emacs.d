@@ -28,8 +28,8 @@
 (add-hook 'cider-repl-mode-hook
           (lambda ()
             (setq show-trailing-whitespace nil)
-            (ac-nrepl-setup)
-            (cider-turn-on-eldoc-mode)
+            ;(ac-nrepl-setup)
+            ;(cider-turn-on-eldoc-mode)
             (paredit-mode 1)))
 
 (add-hook 'clojure-mode-hook
