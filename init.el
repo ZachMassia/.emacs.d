@@ -7,20 +7,20 @@
 (require 'init-package)
 (require 'init-utils)
 
-(let ((basic-pkgs '(auto-complete
-		    smex
-		    magit
-		    autopair
-		    rainbow-delimiters
-		    cyberpunk-theme
-		    paredit
-		    popup
-		    fuzzy
-		    pretty-lambdada
-                    yasnippet
-                    yaml-mode
-                    projectile)))
-  (install-pkg-list basic-pkgs))
+(install-pkg-list
+ '(auto-complete
+   smex
+   magit
+   autopair
+   rainbow-delimiters
+   cyberpunk-theme
+   paredit
+   popup
+   fuzzy
+   pretty-lambdada
+   yasnippet
+   yaml-mode
+   projectile))
 
 ;;;; Appearance --------------------------------------
 (setq inhibit-startup-message t)
@@ -40,6 +40,8 @@
 
 (if (display-graphic-p) 
     (load-theme 'cyberpunk t))
+
+(setq-default tab-width 4)
 
 ;;;; Misc --------------------------------------------
 ;; OSX Stuff
