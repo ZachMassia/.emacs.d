@@ -20,7 +20,8 @@
    pretty-lambdada
    yasnippet
    yaml-mode
-   projectile))
+   projectile
+   editorconfig))
 
 ;;;; Appearance --------------------------------------
 (setq inhibit-startup-message t)
