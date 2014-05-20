@@ -42,7 +42,8 @@
 (if (display-graphic-p) 
     (load-theme 'cyberpunk t))
 
-(setq-default tab-width 4)
+(setq-default tab-width 4
+              line-spacing 3)
 
 ;;;; Misc --------------------------------------------
 ;; OSX Stuff
