@@ -28,8 +28,8 @@
 (add-hook 'cider-repl-mode-hook
           (lambda ()
             (setq show-trailing-whitespace nil)
-            ;(ac-nrepl-setup)
-            ;(cider-turn-on-eldoc-mode)
+            (ac-nrepl-setup)
+            (cider-turn-on-eldoc-mode)
             (paredit-mode 1)))
 
 (add-hook 'clojure-mode-hook
@@ -98,6 +98,16 @@ Display the results in a hyperlinked *compilation* buffer."
 (defun browser-repl ()
   (interactive)
   (run-lisp "/usr/bin/lein trampoline cljsbuild repl-listen"))
+
+(define-clojure-indent
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
 
 
 (provide 'init-clojure)
