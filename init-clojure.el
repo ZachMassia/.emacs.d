@@ -6,19 +6,52 @@
                     align-cljlet
                     ac-nrepl
                     clojure-cheatsheet
-                    clj-refactor))
+                    clj-refactor
+                    cljsbuild-mode))
 (require 'cider)
 (require 'cider-eldoc)
 (require 'clojure-mode)
+(require 'cljsbuild-mode)
 
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'cider-repl-mode))
+
+(define-clojure-indent
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
+
+(setq cljsbuild-hide-buffer-on-success t
+      cljsbuild-compile-command "lein trampoline cljsbuild auto")
+
+(setq nrepl-hide-special-buffers t
+      cider-auto-select-error-buffer nil
+      cider-repl-result-prefix ";; => "
+      cider-repl-use-pretty-printing t
+      cider-repl-use-clojure-font-lock t)
 
 (defadvice clojure-test-run-tests (before save-first activate)
   (save-buffer))
 
 (defadvice cider-load-current-buffer (before save-first activate)
   (save-buffer))
+
+(defun count-last-sexp ()
+  (interactive)
+  (cider-interactive-eval
+   (format "(count %s)"
+           (cider-last-sexp))))
+
+(defun nth-from-last-sexp (n)
+  (interactive "p")
+  (cider-interactive-eval
+   (format "(nth %s %s)"
+           (cider-last-sexp) n)))
 
 (add-hook 'cider-mode-hook
           (lambda ()
@@ -40,7 +73,11 @@
                          "C-c c-e" 'cider-eval-defun-at-point
                          "C-c C-h" 'clojure-cheatsheet
                          "C-c C-m" nil
-                         "C-x C-i" 'align-cljlet)
+                         "C-x C-i" 'align-cljlet
+                         ;; Next two give error for some reason
+                         ;"C-c c"   'count-last-sexp
+                         ;"C-c n"   'nth-from-last-sexp
+                         )
             (cljr-add-keybindings-with-prefix "C-c C-m")
             (clojure-test-mode 1)
             (autopair-mode 1)
@@ -95,19 +132,11 @@ Display the results in a hyperlinked *compilation* buffer."
   (interactive)
   (compile (concat "lein kibit " buffer-file-name)))
 
-(defun browser-repl ()
+(require 'projectile)
+(defun lein-server ()
+  "Run 'lein server' in the project root."
   (interactive)
-  (run-lisp "/usr/bin/lein trampoline cljsbuild repl-listen"))
-
-(define-clojure-indent
-  (defroutes 'defun)
-  (GET 2)
-  (POST 2)
-  (PUT 2)
-  (DELETE 2)
-  (HEAD 2)
-  (ANY 2)
-  (context 2))
-
+  (projectile-with-default-dir (projectile-project-root)
+    (start-process "lein-server" "*lein-server*" "lein" "trampoline" "server")))
 
 (provide 'init-clojure)

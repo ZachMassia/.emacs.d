@@ -3,7 +3,8 @@
 	     "C-a"     'smart-line-beginning
 	     "C-x g"   'magit-status
 	     "<f11>"   'toggle-fullscreen
-	     "M-x"     'smex)
+	     "M-x"     'smex
+         "C-c e"   'erc-start-or-switch)
 
 (require 'paredit)
 (require 'init-paredit)
