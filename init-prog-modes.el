@@ -30,7 +30,8 @@
      (fic-mode 1)
      (rainbow-delimiters-mode 1)
      (yas-minor-mode 1)
-     (whitespace-mode 1))))
+     (whitespace-mode 1)
+     (autopair-mode 1))))
 
 (setq compilation-ask-about-save nil
       compilation-window-height 30)

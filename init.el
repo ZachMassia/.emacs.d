@@ -24,7 +24,8 @@
    projectile
    editorconfig
    markdown-mode
-   markdown-mode+))
+   markdown-mode+
+   exec-path-from-shell))
 
 ;;;; Appearance --------------------------------------
 (setq inhibit-startup-message t)
@@ -38,19 +39,23 @@
 
 ;; Set the font based on OS.
 (pcase system-type
-  (`darwin     (set-frame-font "Monaco-12"))
+  (`darwin     (set-frame-font "Menlo-10"))
   (`gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
   (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
-(if (display-graphic-p) 
-    (load-theme 'solarized-dark t))
+;; Use cyberpunk theme for terminals, solarized for GUI.
+(if (display-graphic-p)
+    (load-theme 'solarized-dark t)
+  (load-theme 'cyberpunk))
 
 (setq-default tab-width 4
-              line-spacing 3)
+              line-spacing 2)
 
 ;;;; Misc --------------------------------------------
 ;; OSX Stuff
 (when (eq system-type 'darwin)
+  ;; Grab $PATH from ~/.zshrc
+  (exec-path-from-shell-initialize)
   ;; Use command key as meta
   (setq mac-option-modifier 'super
         mac-command-modifier 'meta)
@@ -123,7 +128,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "8ac31e1bc1920b33d478dfafb0b45989a00ede15a2388ea16093e7d0988c48d0" "968d1ad07c38d02d2e5debffc5638332696ac41af7974ade6f95841359ed73e3" default))))
+ '(custom-safe-themes (quote ("f0a99f53cbf7b004ba0c1760aa14fd70f2eabafe4e62a2b3cf5cabae8203113b" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "8ac31e1bc1920b33d478dfafb0b45989a00ede15a2388ea16093e7d0988c48d0" "968d1ad07c38d02d2e5debffc5638332696ac41af7974ade6f95841359ed73e3" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
