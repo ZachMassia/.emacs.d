@@ -7,7 +7,8 @@
           (lambda ()
             (turn-on-haskell-indentation)
             (auto-complete-mode)
-            (autopair-mode)))
+            (autopair-mode)
+            (eldoc-mode)))
 
 (eval-after-load "haskell-mode"
   '(fill-keymap haskell-mode-map
