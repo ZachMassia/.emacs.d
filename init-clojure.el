@@ -16,6 +16,10 @@
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'cider-repl-mode))
 
+;; Prevent Cider from adding Java processes to the dock in OSX.
+(eval-after-load "clojure-mode"
+  '(setenv "LEIN_JVM_OPTS" "-Dapple.awt.UIElement=true"))
+
 (define-clojure-indent
   (defroutes 'defun)
   (GET 2)
