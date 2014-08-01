@@ -67,7 +67,8 @@
             (setq show-trailing-whitespace nil)
             (ac-nrepl-setup)
             (cider-turn-on-eldoc-mode)
-            (paredit-mode 1)))
+            (paredit-mode 1)
+            (hl-line-mode -1)))
 
 (add-hook 'clojure-mode-hook
           (lambda ()

@@ -44,9 +44,6 @@
   (`gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
   (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
-;; Highlight the current line
-(global-hl-line-mode 1)
-
 ;; Use cyberpunk theme for terminals, solarized for GUI.
 (if (display-graphic-p)
     (load-theme 'solarized-dark t)
