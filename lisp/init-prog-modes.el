@@ -20,7 +20,8 @@
     nxml-mode
     diff-mode
     haskell-mode
-    rst-mode)
+    rst-mode
+    arduino-mode)
   "What to consider as programming languages.")
 
 (dolist (mode programming-language-major-modes)

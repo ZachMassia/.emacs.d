@@ -1,4 +1,4 @@
-(require 'init-utils)
+(require 'zach-utils)
 
 (install-pkg-list '(csharp-mode
                     omnisharp))

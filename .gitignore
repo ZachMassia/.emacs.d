@@ -24,3 +24,7 @@ project-explorer-cache/
 request/
 /projectile-bookmarks.eld
 .python-environments/
+emacs.el
+.org-id-locations
+ido.last
+smex-items

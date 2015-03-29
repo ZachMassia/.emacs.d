@@ -1,4 +1,4 @@
-(require 'init-utils)
+(require 'zach-utils)
 
 (install-pkg-list '(haskell-mode))
 (require 'haskell-mode)

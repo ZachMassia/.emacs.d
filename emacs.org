@@ -1,0 +1,200 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Zachary Massia
+#+EMAIL: zmassia@gmail.com
+
+* Basic Setup
+
+** Load Path
+
+   Add the lisp subdir to the load path.
+   The utils file is also loaded. It contains a collection of elisp functions
+   collected from the internet.
+
+   #+BEGIN_SRC emacs-lisp
+     (defvar lisp-dir
+       (expand-file-name "lisp" user-emacs-directory)
+       "Elisp files not available through Pallet.")
+
+     (add-to-list 'load-path lisp-dir)
+
+     (require 'zach-utils)
+   #+END_SRC
+
+** Customize File
+
+   Move the customize config to it's own file.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+     (load custom-file)
+   #+END_SRC
+
+* UI
+  
+  No need to have the startup message, or tool & scroll bars.
+  
+  #+BEGIN_SRC emacs-lisp
+    (setq inhibit-startup-message t)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+  #+END_SRC
+  
+
+  Disable the menu bar in terminal
+
+  #+BEGIN_SRC emacs-lisp
+    (when (not (window-system))
+      (menu-bar-mode -1))
+  #+END_SRC
+
+
+  Show git diffs in the left fringe.
+
+  #+BEGIN_SRC emacs-lisp
+    (when (window-system)
+      (global-git-gutter-mode +1))
+  #+END_SRC
+
+
+  Cleanup the modeline. This should be done after the custom-file is loaded or you
+  will get the safe theme prompt on each startup.
+
+  #+BEGIN_SRC emacs-lisp
+    (setq sml/theme 'automatic)
+    (sml/setup)
+    (setq sml/shorten-directory t
+          sml/shorten-modes t)
+  #+END_SRC
+
+
+  Make the scrolling smoother by going a line at a time, for both the keyboard
+  and mouse
+
+  #+BEGIN_SRC emacs-lisp
+    (setq redisplay-dont-pause t
+          scroll-margin 1
+          scroll-step 1
+          scroll-conservatively 10000
+          scroll-preserve-screen-position 1
+
+          mouse-wheel-follow-mouse 't
+          mouse-wheel-scroll-amount '(1 ((shift) .1)))
+  #+END_SRC
+
+
+  Customize the scratch buffer.
+  
+  #+BEGIN_SRC emacs-lisp
+    (setq initial-scratch-message
+          ";; scratch buffer -- hack away!")
+  #+END_SRC
+
+** Font
+
+   Set the font based on OS.
+
+   #+BEGIN_SRC emacs-lisp
+     (pcase system-type
+       (`darwin     (set-frame-font "Menlo-12"))
+       (`gnu/linux  (set-frame-font "Source Code Pro Medium-10"))
+       (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
+   #+END_SRC
+
+
+   Use 4 spaces for indentation. 
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default tab-width 4)
+   #+END_SRC
+   
+* Misc
+
+  Some OSX specific settings. 
+
+  #+BEGIN_SRC emacs-lisp
+    (when (eq system-type 'darwin)
+      ;; Grab $PATH from ~/.zshrc
+      (exec-path-from-shell-initialize)
+      ;; Use command key as meta
+      (setq mac-option-modifier 'super
+            mac-command-modifier 'meta)
+      ;; Make ansi-term play nice with zsh prompt
+      (defadvice ansi-term (after advise-ansi-term-coding-system)
+        (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
+  #+END_SRC
+
+** General package configuration
+
+*** Projectile
+    #+BEGIN_SRC emacs-lisp
+      (projectile-global-mode)
+    #+END_SRC
+
+*** Ido
+    #+BEGIN_SRC emacs-lisp
+      (ido-mode t)
+      (setq ido-enable-flex-matching t)
+    #+END_SRC
+
+*** Uniquify
+    #+BEGIN_SRC emacs-lisp
+      (setq uniquify-buffer-name-style 'post-forward)
+    #+END_SRC
+
+*** Paren
+    #+BEGIN_SRC emacs-lisp
+      (show-paren-mode t)
+      (setq show-paren-delay 0
+            show-paren-style 'parenthesis)
+    #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp
+    (setq whitespace-style '(face empty lines-tail trailing)
+          whitespace-line-column 100)
+
+    (column-number-mode 1)
+
+    (setq-default indent-tabs-mode nil)
+  #+END_SRC
+  
+** Backup  
+   
+   Some backup settings. These should be cleaned up in the future.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t))
+           backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
+
+     (make-directory (concat user-emacs-directory "autosaves/") t)
+
+     (setq vc-make-backup-files t
+           backup-by-copying t
+           delete-old-versions t
+           kept-new-versions 6
+           kept-old-versions 2
+           version-control t)
+   #+END_SRC
+    
+* Load Elisp files
+  
+  #+BEGIN_SRC emacs-lisp
+    (require 'init-key-bindings)
+    (require 'init-auto-complete)
+    (require 'init-prog-modes)
+    (require 'init-org)
+    (require 'init-elisp)
+    (require 'init-paredit)
+    (require 'init-smex)
+
+    (require 'init-arduino)
+    (require 'init-clojure)
+                                            ;(require 'init-csharp)
+                                            ;(require 'init-fsharp)
+    (require 'init-python)
+                                            ;(require 'init-go)
+                                            ;(require 'init-haskell)
+    (require 'init-javascript)
+                                            ;(require 'init-lua)
+                                            ;(require 'init-racket)
+                                            ;(require 'init-typescript)
+  #+END_SRC

@@ -98,4 +98,4 @@ A `spec' can be a `read-kbd-macro'-readable string or a vector."
     (cofi/set-key map (car mapping) (cadr mapping)))
   map)
 
-(provide 'init-utils)
+(provide 'zach-utils)
