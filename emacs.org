@@ -4,30 +4,27 @@
 
 * Basic Setup
 
-** Load Path
+  Add the lisp subdir to the load path.
+  The utils file is also loaded. It contains a collection of elisp functions
+  collected from the internet.
+  
+  #+BEGIN_SRC emacs-lisp
+    (defvar lisp-dir
+      (expand-file-name "lisp" user-emacs-directory)
+      "Elisp files not available through Pallet.")
 
-   Add the lisp subdir to the load path.
-   The utils file is also loaded. It contains a collection of elisp functions
-   collected from the internet.
+    (add-to-list 'load-path lisp-dir)
 
-   #+BEGIN_SRC emacs-lisp
-     (defvar lisp-dir
-       (expand-file-name "lisp" user-emacs-directory)
-       "Elisp files not available through Pallet.")
-
-     (add-to-list 'load-path lisp-dir)
-
-     (require 'zach-utils)
-   #+END_SRC
-
-** Customize File
-
-   Move the customize config to it's own file.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-     (load custom-file)
-   #+END_SRC
+    (require 'zach-utils)
+  #+END_SRC
+  
+  
+  Move the customize config to it's own file.
+  
+  #+BEGIN_SRC emacs-lisp
+    (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+    (load custom-file)
+  #+END_SRC
 
 * UI
   
@@ -125,37 +122,37 @@
 
 ** General package configuration
 
-*** Projectile
-    #+BEGIN_SRC emacs-lisp
-      (projectile-global-mode)
-    #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (setq whitespace-style '(face empty lines-tail trailing)
+           whitespace-line-column 100)
 
-*** Ido
-    #+BEGIN_SRC emacs-lisp
-      (ido-mode t)
-      (setq ido-enable-flex-matching t)
-    #+END_SRC
+     (column-number-mode 1)
 
-*** Uniquify
-    #+BEGIN_SRC emacs-lisp
-      (setq uniquify-buffer-name-style 'post-forward)
-    #+END_SRC
-
-*** Paren
-    #+BEGIN_SRC emacs-lisp
-      (show-paren-mode t)
-      (setq show-paren-delay 0
-            show-paren-style 'parenthesis)
-    #+END_SRC
-
-  #+BEGIN_SRC emacs-lisp
-    (setq whitespace-style '(face empty lines-tail trailing)
-          whitespace-line-column 100)
-
-    (column-number-mode 1)
-
-    (setq-default indent-tabs-mode nil)
-  #+END_SRC
+     (setq-default indent-tabs-mode nil)
+   #+END_SRC
+   
+**** Projectile
+     #+BEGIN_SRC emacs-lisp
+       (projectile-global-mode)
+     #+END_SRC
+     
+**** Ido
+     #+BEGIN_SRC emacs-lisp
+       (ido-mode t)
+       (setq ido-enable-flex-matching t)
+     #+END_SRC
+     
+**** Uniquify
+     #+BEGIN_SRC emacs-lisp
+       (setq uniquify-buffer-name-style 'post-forward)
+     #+END_SRC
+     
+**** Paren
+     #+BEGIN_SRC emacs-lisp
+       (show-paren-mode t)
+       (setq show-paren-delay 0
+             show-paren-style 'parenthesis)
+     #+END_SRC
   
 ** Backup  
    
