@@ -25,7 +25,7 @@
     (load custom-file)
   #+END_SRC
 
-* COMMENT UI
+* UI
   
   No need to have the startup message, or tool & scroll bars.
   
@@ -39,7 +39,7 @@
   Only show the menu bar on OSX.
 
   #+BEGIN_SRC emacs-lisp
-    (when (eq system-type `darwin)
+    (when (not (eq system-type `darwin))
       (menu-bar-mode -1))
 
   #+END_SRC
