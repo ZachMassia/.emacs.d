@@ -127,6 +127,11 @@
         (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
   #+END_SRC
 
+  Prevent Magit from showing it's instructions buffer on each startup.
+
+  #+BEGIN_SRC emacs-lisp
+    (setq magit-last-seen-setup-instructions "1.4.0")
+  #+END_SRC
 
   Here we define some global key bindings.
 
