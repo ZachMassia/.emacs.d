@@ -1,4 +1,9 @@
-(require 'cask "/usr/local/Cellar/cask/0.7.2/cask.el")
+(defvar cask-el-path
+  (pcase system-type
+    (`darwin    "/usr/local/Cellar/cask/0.7.2/cask.el")
+    (`gnu/linux "/usr/share/cask/cask.el")))
+
+(require 'cask cask-el-path)
 (cask-initialize)
 (require 'pallet)
 (pallet-mode t)
