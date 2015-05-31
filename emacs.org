@@ -879,3 +879,23 @@
 
       (tss-config-default)
     #+END_SRC
+
+*** Rust
+
+    Grab the necessary environment variables for Racer.
+
+    #+BEGIN_SRC emacs-lisp
+      (when (eq (window-system) 'ns)
+        (exec-path-from-shell-copy-envs '("RUST_SRC_PATH" "RACER_CMD" "RACER_DIR")))
+
+      (setq racer-rust-src-path (getenv "RUST_SRC_PATH")
+            racer-cmd           (getenv "RACER_CMD"))
+
+    #+END_SRC
+
+    Setup Racer to provide auto completion using company.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'load-path (expand-file-name "editors/emacs" (getenv "RACER_DIR")))
+      (eval-after-load "rust-mode" '(require 'racer))
+    #+END_SRC
