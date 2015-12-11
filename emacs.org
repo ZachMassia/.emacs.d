@@ -323,7 +323,7 @@
            kept-old-versions 2
            version-control t)
    #+END_SRC
-
+   
 * Programming Packages
 
 *** General Setup
@@ -366,8 +366,7 @@
            (rainbow-delimiters-mode 1)
            (yas-minor-mode 1)
            (whitespace-mode 1)
-           (autopair-mode 1)
-           (hl-line-mode 1))))
+           (autopair-mode 1))))
     #+END_SRC
 
 
@@ -426,6 +425,7 @@
     #+BEGIN_SRC emacs-lisp
       (require 'cider)
       (require 'cider-eldoc)
+      (require 'ac-cider)
       (require 'clojure-mode)
       (require 'cljsbuild-mode)
     #+END_SRC
@@ -434,8 +434,13 @@
     Use auto complete in a Cider REPL
 
     #+BEGIN_SRC emacs-lisp
+      (add-hook 'cider-mod-hook 'ac-flyspell-workaround)
+      (add-hook 'cider-mod-hook 'ac-cider-setup)
+      (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
       (eval-after-load "auto-complete"
-        '(add-to-list 'ac-modes 'cider-repl-mode))
+        '(progn
+           (add-to-list 'ac-modes 'cider-mode)
+           (add-to-list 'ac-modes 'cider-repl-mode)))
     #+END_SRC
 
     
@@ -523,13 +528,11 @@
      #+BEGIN_SRC emacs-lisp
        (add-hook 'cider-mode-hook
                  (lambda ()
-                   (cider-turn-on-eldoc-mode)
-                   (ac-nrepl-setup)))
+                   (cider-turn-on-eldoc-mode)))
 
        (add-hook 'cider-repl-mode-hook
                  (lambda ()
                    (setq show-trailing-whitespace nil)
-                   (ac-nrepl-setup)
                    (cider-turn-on-eldoc-mode)
                    (paredit-mode 1)
                    (hl-line-mode -1)))
@@ -554,7 +557,7 @@
                    (local-set-key (kbd "RET") 'newline-and-indent)))
      #+END_SRC
 
-
+     
 **** Kibit
 
      Emacs integration for Kibit, a static code analyzer.
@@ -668,6 +671,67 @@
 
      #+END_SRC
 
+*** C++
+    Add the required company backends.
+
+    #+BEGIN_SRC emacs-lisp
+      (with-eval-after-load 'company
+        (add-to-list 'company-backends 'company-irony)
+        (add-to-list 'company-backends 'company-c-headers))
+
+    #+END_SRC
+    
+
+    Add irony-mode to c/c++ mode, and arduino mode.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'arduino-mode-hook 'irony-mode)
+    #+END_SRC
+
+
+    Replace the `completion-at-point' and `complete-symbol' bindings in
+    irony-mode's buffers by irony-mode's function.
+    
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'irony-mode-hook
+                (lambda ()
+                  (define-key irony-mode-map [remap completion-at-point]
+                    'irony-completion-at-point-async)
+
+                  (define-key irony-mode-map [remap complete-symbol]
+                    'irony-completion-at-point-async)
+
+                  (irony-cdb-autosetup-compile-options)
+
+                  (irony-eldoc)
+
+                  (company-arduino-turn-on)))
+    #+END_SRC
+
+
+    company-c-headers setup.
+
+    #+BEGIN_SRC emacs-lisp
+      (defun my-company-c-headers-get-system-path ()
+        (let ((default '("/usr/include/" "/usr/local/include/")))
+          (company-arduino-append-include-dirs default t)))
+
+    #+END_SRC
+
+    
+    Use Flycheck with Irony.
+
+    #+BEGIN_SRC emacs-lisp
+      (eval-after-load 'flycheck
+        '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+    #+END_SRC
+
+**** Arduino and PlatformIO
+
+     Setup some functions 
+
 *** C#
     
     #+BEGIN_SRC emacs-lisp
@@ -722,58 +786,13 @@
     
     #+BEGIN_SRC emacs-lisp
       (require 'fsharp-mode)
-      (setq inferior-fsharp-program "/usr/local/bin/fsharpi"
+      (setq inferior-fsharp-program "/usr/local/bin/fsharpi --readline-"
             fsharp-compiler "/usr/local/bin/fsharpc")
 
       (add-hook 'fsharp-mode-hook
                 (lambda ()
                   (auto-complete-mode t)
                   (autopair-mode t)))
-    #+END_SRC
-
-*** Go
-
-    First we define a helper function to provide the full path to a package's
-    source directory given a package name.
-
-    #+BEGIN_SRC emacs-lisp
-      (defun expand-go-src (pkg &optional domain)
-        (let* ((root (if domain
-                         (expand-file-name domain "src")
-                       "src/github.com"))
-               (gosrc (expand-file-name root (getenv "GOPATH"))))
-          (expand-file-name pkg gosrc)))
-    #+END_SRC
-
-
-    Define the path for goflymake and gocode src directories.
-
-    #+BEGIN_SRC emacs-lisp
-      (defvar goflymake-dir (expand-go-src "dougm/goflymake"))
-      (defvar gocode-dir (expand-go-src "nsf/gocode/emacs"))
-    #+END_SRC
-
-
-    I don't always have Go setup on my computer, so make sure the above
-    packages exist before we go ahead and require them.
-
-    #+BEGIN_SRC emacs-lisp
-      (when (and (file-exists-p goflymake-dir)
-                 (file-exists-p gocode-dir))
-        (require 'go-flycheck)
-        (require 'go-autocomplete))
-    #+END_SRC
-
-
-    Go-mode is installed through Pallet so set it up regardless.
-
-    #+BEGIN_SRC emacs-lisp
-      (require 'go-mode)
-
-      (add-hook 'before-save-hook #'gofmt-before-save)
-
-      (add-hook 'go-mode-hook (lambda ()
-                                (autopair-mode)))
     #+END_SRC
 
 *** Haskell
@@ -849,22 +868,13 @@
 *** Racket
 
     #+BEGIN_SRC emacs-lisp
-      (require 'geiser)
-      (require 'ac-geiser)
-      (require 'quack)
+      (require 'racket-mode)
 
-      (eval-after-load "auto-complete"
-        '(add-to-list 'ac-modes 'geiser-repl-mode))
-
-      (add-hook 'geiser-mode-hook
+      (add-hook 'racket-mode-hook
                 (lambda ()
-                  (ac-geiser-setup)
-                  (paredit-mode 1)))
-
-      (add-hook 'geiser-repl-mode-hook
-                (lambda ()
-                  (ac-geiser-setup)
-                  (paredit-mode 1)))
+                  (autopair-mode 1)
+                  (paredit-mode 1)
+                  (local-set-key (kbd "RET") 'newline-and-indent)))
     #+END_SRC
 
 *** Typescript
