@@ -86,6 +86,23 @@
           ";; scratch buffer -- hack away!")
   #+END_SRC
 
+  Scroll the compilation buffer automatically.
+
+  #+BEGIN_SRC emacs-lisp
+    (setq compilation-scroll-output t)
+  #+END_SRC
+
+  Properly display colors in the compilation buffer.
+
+  #+BEGIN_SRC emacs-lisp
+    (require 'ansi-color)
+
+    (add-hook 'compilation-filter-hook
+              (lambda ()
+                (when (eq major-mode 'compilation-mode)
+                  (ansi-color-apply-on-region compilation-filter-start (point-max)))))
+  #+END_SRC
+
 ** Font
 
    Set the font based on OS.
@@ -384,7 +401,8 @@
       (require 'flycheck)
 
       (add-hook 'after-init-hook #'global-flycheck-mode)
-      (setq flycheck-completion-system 'ido)
+      (setq flycheck-completion-system 'ido
+            flycheck-disabled-checkers '(emacs-lisp-checkdoc))
 
       (defun magnars/adjust-flycheck-automatic-syntax-eagerness ()
         "Adjust how often we check for errors based on if there are any.
@@ -417,6 +435,9 @@
          up before you execute another command."
         (flycheck-clear-idle-change-timer)
         (flycheck-buffer-automatically 'idle-change))
+
+      (eval-after-load 'flycheck
+        '(flycheck-package-setup))
     #+END_SRC
     
     
@@ -687,7 +708,6 @@
     #+BEGIN_SRC emacs-lisp
       (add-hook 'c++-mode-hook 'irony-mode)
       (add-hook 'c-mode-hook 'irony-mode)
-      (add-hook 'arduino-mode-hook 'irony-mode)
     #+END_SRC
 
 
@@ -705,20 +725,9 @@
 
                   (irony-cdb-autosetup-compile-options)
 
-                  (irony-eldoc)
-
-                  (company-arduino-turn-on)))
+                  (irony-eldoc)))
     #+END_SRC
 
-
-    company-c-headers setup.
-
-    #+BEGIN_SRC emacs-lisp
-      (defun my-company-c-headers-get-system-path ()
-        (let ((default '("/usr/include/" "/usr/local/include/")))
-          (company-arduino-append-include-dirs default t)))
-
-    #+END_SRC
 
     
     Use Flycheck with Irony.
@@ -727,10 +736,6 @@
       (eval-after-load 'flycheck
         '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
     #+END_SRC
-
-**** Arduino and PlatformIO
-
-     Setup some functions 
 
 *** C#
     
@@ -863,6 +868,15 @@
                   (jedi:setup)
                   (setq tab-width 4)))
       (setq jedi:complete-on-dot t)
+    #+END_SRC
+
+    Support for virtualenv within Emacs.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq venv-location
+            (exec-path-from-shell-getenv "WORKON_HOME"))
+
+      (venv-initialize-eshell)
     #+END_SRC
 
 *** Racket
