@@ -41,7 +41,7 @@
   #+BEGIN_SRC emacs-lisp
     (when (not (eq system-type `darwin))
       (menu-bar-mode -1))
-
+nnnnn
   #+END_SRC
 
 
@@ -110,7 +110,7 @@
    #+BEGIN_SRC emacs-lisp
      (pcase system-type
        (`darwin     (set-frame-font "Menlo-12"))
-       (`gnu/linux  (set-frame-font "Meslo LG S 9"))
+       (`gnu/linux  (set-frame-font "Meslo LG M 10"))
        (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
    #+END_SRC
 
@@ -159,7 +159,8 @@
                  "C-x g"   'magit-status
                  "<f11>"   'toggle-fullscreen
                  "M-x"     'smex
-                 "C-c e"   'erc-start-or-switch)
+                 "C-c e"   'erc-start-or-switch
+                 "C-c t"   'visit-term-buffer)
   #+END_SRC   
 
 ** General package configuration
@@ -349,7 +350,22 @@
            kept-old-versions 2
            version-control t)
    #+END_SRC
-   
+** Convenience functions
+
+   Split the current buffer with a terminal.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun visit-term-buffer ()
+       "Create or visit a terminal buffer."
+       (interactive)
+       (if (not (get-buffer "*ansi-term*"))
+           (progn
+             (split-window-sensibly (selected-window))
+             (other-window 1)
+             (ansi-term (getenv "SHELL")))
+         (switch-to-buffer-other-window "*ansi-term*")))
+   #+END_SRC
+      
 * Programming Packages
 
 *** General Setup
