@@ -41,7 +41,6 @@
   #+BEGIN_SRC emacs-lisp
     (when (not (eq system-type `darwin))
       (menu-bar-mode -1))
-nnnnn
   #+END_SRC
 
 
