@@ -307,7 +307,6 @@
                     "C-)" 'forward-slurp-sexp)
      #+END_SRC
 
-
 **** Smex
 
      #+BEGIN_SRC emacs-lisp
@@ -323,6 +322,16 @@
            ad-do-it))
      #+END_SRC
   
+**** COMMENT Magit
+
+     Enable gitflow in magit.
+
+     #+BEGIN_SRC emacs-lisp
+       (require 'magit-gitflow)
+
+       (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+     #+END_SRC
+     
 ** Backup  
    
    Some backup settings. These should be cleaned up in the future.
