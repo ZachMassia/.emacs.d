@@ -322,7 +322,7 @@
            ad-do-it))
      #+END_SRC
   
-**** COMMENT Magit
+**** Magit
 
      Enable gitflow in magit.
 
@@ -727,7 +727,7 @@
     #+END_SRC
     
 
-    Add irony-mode to c/c++ mode, and arduino mode.
+    Add irony-mode to c/c++ mode.
 
     #+BEGIN_SRC emacs-lisp
       (add-hook 'c++-mode-hook 'irony-mode)
@@ -759,6 +759,12 @@
     #+BEGIN_SRC emacs-lisp
       (eval-after-load 'flycheck
         '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+    #+END_SRC
+
+    Since most of my C++ programming is for Arduino, enable PlatformIO mode automatically.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'c++-mode-hook 'platformio-mode)
     #+END_SRC
 
 *** C#
