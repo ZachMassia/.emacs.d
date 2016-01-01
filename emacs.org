@@ -728,10 +728,16 @@
     
 
     Add irony-mode to c/c++ mode.
+    Since most of my C++ programming is for Arduino, enable PlatformIO mode automatically.
 
     #+BEGIN_SRC emacs-lisp
-      (add-hook 'c++-mode-hook 'irony-mode)
       (add-hook 'c-mode-hook 'irony-mode)
+
+      (add-hook 'c++-mode-hook (lambda ()
+                                 (irony-mode)
+                                 (irony-eldoc)
+                                 (platformio-mode)))
+
     #+END_SRC
 
 
@@ -747,9 +753,7 @@
                   (define-key irony-mode-map [remap complete-symbol]
                     'irony-completion-at-point-async)
 
-                  (irony-cdb-autosetup-compile-options)
-
-                  (irony-eldoc)))
+                  (irony-cdb-autosetup-compile-options)))
     #+END_SRC
 
 
@@ -761,10 +765,12 @@
         '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
     #+END_SRC
 
-    Since most of my C++ programming is for Arduino, enable PlatformIO mode automatically.
+    Setup the compilation buffer to work with PlatformIO-Mode.
 
     #+BEGIN_SRC emacs-lisp
-      (add-hook 'c++-mode-hook 'platformio-mode)
+      (require 'platformio-mode)
+
+      (platformio-setup-compile-buffer)
     #+END_SRC
 
 *** C#

@@ -63,8 +63,6 @@
 (depends-on "magit")
 (depends-on "magit-gitflow")
 (depends-on "magit-popup")
-(depends-on "markdown-mode")
-(depends-on "markdown-mode+")
 (depends-on "multiple-cursors")
 (depends-on "omnisharp")
 (depends-on "package-build")
