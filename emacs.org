@@ -85,23 +85,6 @@
           ";; scratch buffer -- hack away!")
   #+END_SRC
 
-  Scroll the compilation buffer automatically.
-
-  #+BEGIN_SRC emacs-lisp
-    (setq compilation-scroll-output t)
-  #+END_SRC
-
-  Properly display colors in the compilation buffer.
-
-  #+BEGIN_SRC emacs-lisp
-    (require 'ansi-color)
-
-    (add-hook 'compilation-filter-hook
-              (lambda ()
-                (when (eq major-mode 'compilation-mode)
-                  (ansi-color-apply-on-region compilation-filter-start (point-max)))))
-  #+END_SRC
-
 ** Font
 
    Set the font based on OS.
