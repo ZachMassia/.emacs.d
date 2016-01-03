@@ -714,6 +714,12 @@
         (add-to-list 'company-backends 'company-c-headers))
 
     #+END_SRC
+
+    Set company-mode to try and complete instantly.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq company-idle-delay 0)
+    #+END_SRC
     
 
     Add irony-mode to c/c++ mode.

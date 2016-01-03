@@ -38,6 +38,7 @@
 (depends-on "fringe-helper")
 (depends-on "fsharp-mode")
 (depends-on "fuzzy")
+(depends-on "git-commit")
 (depends-on "git-commit-mode")
 (depends-on "git-gutter")
 (depends-on "git-gutter-fringe")
