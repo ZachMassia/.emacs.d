@@ -25,6 +25,8 @@
 (depends-on "dash")
 (depends-on "deferred")
 (depends-on "editorconfig")
+(depends-on "editorconfig-core")
+(depends-on "editorconfig-fnmatch")
 (depends-on "edn")
 (depends-on "epc")
 (depends-on "epl")
