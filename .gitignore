@@ -28,3 +28,4 @@ emacs.el
 .org-id-locations
 ido.last
 smex-items
+irony/

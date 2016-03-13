@@ -90,6 +90,8 @@
 (depends-on "smart-mode-line")
 (depends-on "smex")
 (depends-on "solarized-theme")
+(depends-on "spinner")
+(depends-on "sublime-themes")
 (depends-on "systemd")
 (depends-on "toml-mode")
 (depends-on "tss")

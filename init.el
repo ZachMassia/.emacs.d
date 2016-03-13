@@ -1,6 +1,6 @@
 (defvar cask-el-path
   (pcase system-type
-    (`darwin    "/usr/local/Cellar/cask/0.7.2/cask.el")
+    (`darwin    "/usr/local/Cellar/cask/0.7.4/cask.el")
     (`gnu/linux "/usr/share/cask/cask.el")))
 
 (require 'cask cask-el-path)
