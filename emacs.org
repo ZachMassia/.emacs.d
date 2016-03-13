@@ -460,6 +460,13 @@
       (eval-after-load 'flycheck
         '(flycheck-package-setup))
     #+END_SRC
+
+
+    Setup the indentation style for C-based languages (C, C++, Java, etc).
+
+    #+BEGIN_SRC emacs-lisp
+      (setq c-default-style "stroustrup")
+    #+END_SRC
     
     
 *** Clojure
