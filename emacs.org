@@ -905,7 +905,9 @@
 
     #+BEGIN_SRC emacs-lisp
       (setq venv-location
-            (exec-path-from-shell-getenv "WORKON_HOME"))
+            (if (eq system-type 'darwin)
+                (exec-path-from-shell-getenv "WORKON_HOME")
+              (getenv "WORKON_HOME")))
 
       (venv-initialize-eshell)
     #+END_SRC
