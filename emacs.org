@@ -56,7 +56,7 @@
   will get the safe theme prompt on each startup.
 
   #+BEGIN_SRC emacs-lisp
-    (setq sml/theme 'automatic)
+    (setq sml/theme 'respectful)
     (sml/setup)
     (setq sml/shorten-directory t
           sml/shorten-modes t)
