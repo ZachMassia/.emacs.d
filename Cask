@@ -86,6 +86,7 @@
 (depends-on "rich-minority")
 (depends-on "rust-mode")
 (depends-on "s")
+(depends-on "seq")
 (depends-on "shut-up")
 (depends-on "smart-mode-line")
 (depends-on "smex")

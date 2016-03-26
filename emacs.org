@@ -142,7 +142,8 @@
                  "<f11>"   'toggle-fullscreen
                  "M-x"     'smex
                  "C-c e"   'erc-start-or-switch
-                 "C-c t"   'visit-term-buffer)
+                 "C-c t"   'visit-term-buffer
+                 "C-j"     'newline-and-indent)
   #+END_SRC   
 
 ** General package configuration
