@@ -140,7 +140,6 @@
                  "C-a"     'smart-line-beginning
                  "C-x g"   'magit-status
                  "<f11>"   'toggle-fullscreen
-                 "M-x"     'smex
                  "C-c e"   'erc-start-or-switch
                  "C-c t"   'visit-term-buffer
                  "C-j"     'newline-and-indent)
@@ -157,27 +156,61 @@
      (setq-default indent-tabs-mode nil)
    #+END_SRC
 
-
    Enable the EditorConfig plugin.
 
    #+BEGIN_SRC emacs-lisp
      (editorconfig-mode 1)
    #+END_SRC
 
-   
 **** Projectile
      #+BEGIN_SRC emacs-lisp
        (require 'projectile)
        (projectile-global-mode)
      #+END_SRC
-     
-**** Ido
+
+**** Helm
+
      #+BEGIN_SRC emacs-lisp
-       (require 'ido)
-       (ido-mode t)
-       (setq ido-enable-flex-matching t)
+       (require 'helm-config)
+       (helm-mode 1)
+       (helm-autoresize-mode 1)
+       (helm-flx-mode 1)
+     #+END_SRC
+
+     Setup the global Helm key bindings.
+
+     #+BEGIN_SRC emacs-lisp
+       (fill-keymap 'global
+                    "M-x"       'helm-M-x
+                    "M-y"       'helm-show-kill-ring
+                    "C-x C-f"   'helm-find-files
+                    "C-c <SPC>" 'helm-all-mark-rings
+                    "C-x r b"   'helm-filtered-bookmarks
+                    "C-h r"     'helm-info-emacs
+                    "C-,"       'helm-calcul-expression
+                    "C-h i"     'helm-info-at-point
+                    "C-x C-d"   'helm-browse-project
+                    "C-h C-f"   'helm-apropos
+                    "C-h a"     'helm-apropos
+                    "C-s"       'helm-occur)
+     #+END_SRC
+
+     Add some key bindings for helm-company.
+
+     #+BEGIN_SRC emacs-lisp
+       (eval-after-load 'company
+         '(progn
+            (define-key company-mode-map (kbd "C-:") 'helm-company)
+            (define-key company-active-map (kbd "C-:") 'helm-company)))
      #+END_SRC
      
+     Add a key for helm-flycheck as well.
+
+     #+BEGIN_SRC emacs-lisp
+       (eval-after-load 'flycheck
+         '(define-key flycheck-mode-map (kbd "C-c ! h") 'helm-flycheck))
+     #+END_SRC
+
 **** Uniquify
      #+BEGIN_SRC emacs-lisp
        (setq uniquify-buffer-name-style 'post-forward)
@@ -305,20 +338,6 @@
                     "C-)" 'forward-slurp-sexp)
      #+END_SRC
 
-**** Smex
-
-     #+BEGIN_SRC emacs-lisp
-       (require 'smex)
-
-       (defadvice smex (around space-inserts-hyphen activate compile)
-         (let ((ido-cannot-complete-command
-            `(lambda ()
-               (interactive)
-               (if (string= " " (this-command-keys))
-               (insert ?-)
-                 (funcall ,ido-cannot-complete-command)))))
-           ad-do-it))
-     #+END_SRC
   
 **** Magit
 
