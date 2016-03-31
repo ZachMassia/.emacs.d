@@ -16,13 +16,18 @@
 
     (require 'zach-utils)
   #+END_SRC
-  
-  
+    
   Move the customize config to it's own file.
   
   #+BEGIN_SRC emacs-lisp
     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
     (load custom-file)
+  #+END_SRC
+
+  Suppress warnings for functions redefined by ~defadvice~.
+  
+  #+BEGIN_SRC emacs-lisp
+    (setq ad-redefinition-action 'accept)
   #+END_SRC
 
 * UI
@@ -43,6 +48,13 @@
       (menu-bar-mode -1))
   #+END_SRC
 
+
+  Set the default window size.
+
+  #+BEGIN_SRC emacs-lisp
+    (when window-system
+      (set-frame-size (selected-frame) 140 40))
+  #+END_SRC
 
   Show git diffs in the left fringe.
 
@@ -116,6 +128,7 @@
 
   #+BEGIN_SRC emacs-lisp
     (when (eq system-type 'darwin)
+      (setq exec-path-from-shell-check-startup-files nil)
       ;; Grab $PATH from ~/.zshrc
       (exec-path-from-shell-initialize)
       ;; Use command key as meta
@@ -757,17 +770,17 @@
     #+END_SRC
     
 
-    Add irony-mode to c/c++ mode.
-    Since most of my C++ programming is for Arduino, enable PlatformIO mode automatically.
+    Add irony-mode and platformio-mode to c/c++ mode.
 
     #+BEGIN_SRC emacs-lisp
-      (add-hook 'c-mode-hook 'irony-mode)
+      (defun irony-and-platformio-hook ()
+        (irony-mode 1)
+        (irony-eldoc 1)
+        (platformio-conditionally-enable))
 
-      (add-hook 'c++-mode-hook (lambda ()
-                                 (irony-mode)
-                                 (irony-eldoc)
-                                 (platformio-mode)))
+      (add-hook 'c-mode-hook 'irony-and-platformio-hook)
 
+      (add-hook 'c++-mode-hook 'irony-and-platformio-hook)
     #+END_SRC
 
 
