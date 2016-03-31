@@ -17,12 +17,14 @@
     (require 'zach-utils)
   #+END_SRC
     
+
   Move the customize config to it's own file.
   
   #+BEGIN_SRC emacs-lisp
     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
     (load custom-file)
   #+END_SRC
+
 
   Suppress warnings for functions redefined by ~defadvice~.
   
@@ -55,6 +57,7 @@
     (when window-system
       (set-frame-size (selected-frame) 140 40))
   #+END_SRC
+
 
   Show git diffs in the left fringe.
 
@@ -139,11 +142,13 @@
         (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
   #+END_SRC
 
+
   Prevent Magit from showing it's instructions buffer on each startup.
 
   #+BEGIN_SRC emacs-lisp
     (setq magit-last-seen-setup-instructions "1.4.0")
   #+END_SRC
+
 
   Here we define some global key bindings.
 
@@ -169,6 +174,7 @@
      (setq-default indent-tabs-mode nil)
    #+END_SRC
 
+
    Enable the EditorConfig plugin.
 
    #+BEGIN_SRC emacs-lisp
@@ -190,6 +196,7 @@
        (helm-flx-mode 1)
      #+END_SRC
 
+
      Setup the global Helm key bindings.
 
      #+BEGIN_SRC emacs-lisp
@@ -208,6 +215,7 @@
                     "C-s"       'helm-occur)
      #+END_SRC
 
+
      Add some key bindings for helm-company.
 
      #+BEGIN_SRC emacs-lisp
@@ -217,6 +225,7 @@
             (define-key company-active-map (kbd "C-:") 'helm-company)))
      #+END_SRC
      
+
      Add a key for helm-flycheck as well.
 
      #+BEGIN_SRC emacs-lisp
@@ -264,6 +273,7 @@
      #+BEGIN_SRC emacs-lisp
        (add-hook 'org-mode-hook 'flyspell-mode)
      #+END_SRC
+
 
      Enable syntax highlighting of code blocks
 
@@ -350,7 +360,6 @@
                     "C-(" 'backward-slurp-sexp
                     "C-)" 'forward-slurp-sexp)
      #+END_SRC
-
   
 **** Magit
 
@@ -379,6 +388,7 @@
            kept-old-versions 2
            version-control t)
    #+END_SRC
+
 ** Convenience functions
 
    Split the current buffer with a terminal.
@@ -603,7 +613,6 @@
                                                      (match-end 1) "∈")
                                      nil))))))
     #+END_SRC
-
     
 **** Hooks
 
@@ -639,11 +648,9 @@
                    (local-set-key (kbd "RET") 'newline-and-indent)))
      #+END_SRC
 
-     
 **** Kibit
 
      Emacs integration for Kibit, a static code analyzer.
-
      
      Teach compile the syntax of the Kibit output.
 
@@ -670,7 +677,6 @@
          (interactive)
          (compile (concat "lein kibit " buffer-file-name)))
      #+END_SRC
-
 
 **** 4clojure
 
@@ -719,7 +725,6 @@
            (cider-jack-in)))
      #+END_SRC
 
-
 **** Misc Functions
 
      #+BEGIN_SRC emacs-lisp
@@ -754,6 +759,7 @@
      #+END_SRC
 
 *** C++
+
     Add the required company backends.
 
     #+BEGIN_SRC emacs-lisp
@@ -762,6 +768,7 @@
         (add-to-list 'company-backends 'company-c-headers))
 
     #+END_SRC
+
 
     Set company-mode to try and complete instantly.
 
@@ -799,7 +806,6 @@
                   (irony-cdb-autosetup-compile-options)))
     #+END_SRC
 
-
     
     Use Flycheck with Irony.
 
@@ -807,6 +813,7 @@
       (eval-after-load 'flycheck
         '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
     #+END_SRC
+
 
     Setup the compilation buffer to work with PlatformIO-Mode.
 
@@ -918,6 +925,7 @@
                   (autopair-on)))
     #+END_SRC
 
+
     Use 2 space indentation
 
     #+BEGIN_SRC emacs-lisp
@@ -948,6 +956,7 @@
                   (setq tab-width 4)))
       (setq jedi:complete-on-dot t)
     #+END_SRC
+
 
     Support for virtualenv within Emacs.
 
@@ -997,6 +1006,7 @@
             racer-cmd           (getenv "RACER_CMD"))
 
     #+END_SRC
+
 
     Setup Racer to provide auto completion using company.
 
