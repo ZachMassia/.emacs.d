@@ -96,6 +96,7 @@
 (depends-on "solarized-theme")
 (depends-on "spinner")
 (depends-on "systemd")
+(depends-on "toc-org")
 (depends-on "toml-mode")
 (depends-on "tss")
 (depends-on "virtualenvwrapper")

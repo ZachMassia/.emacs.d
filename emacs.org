@@ -1,6 +1,29 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Zachary Massia
 
+* Table of Contents                                                     :TOC_3:
+ - [[#basic-setup][Basic Setup]]
+ - [[#ui][UI]]
+   - [[#font][Font]]
+ - [[#misc][Misc]]
+   - [[#general-package-configuration][General package configuration]]
+   - [[#backup--][Backup  ]]
+   - [[#convenience-functions][Convenience functions]]
+ - [[#programming-packages][Programming Packages]]
+     - [[#general-setup][General Setup]]
+     - [[#clojure][Clojure]]
+     - [[#c][C++]]
+     - [[#c][C#]]
+     - [[#emacs-lisp][Emacs Lisp]]
+     - [[#f][F#]]
+     - [[#haskell][Haskell]]
+     - [[#javascript][Javascript]]
+     - [[#lua][Lua]]
+     - [[#python][Python]]
+     - [[#racket][Racket]]
+     - [[#typescript][Typescript]]
+     - [[#rust][Rust]]
+
 * Basic Setup
 
   Add the lisp subdir to the load path.
@@ -281,6 +304,13 @@
        (setq org-src-fontify-natively t)
      #+END_SRC
 
+
+     Enable ~toc-org~ so this file can have a ToC in Github without any exporting.
+
+     #+BEGIN_SRC emacs-lisp
+       (add-hook 'org-mode-hook 'toc-org-enable)
+     #+END_SRC
+     
 **** Paredit
 
      Some enhanced fns I found somewhere on the internet.
