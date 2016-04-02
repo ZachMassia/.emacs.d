@@ -54,6 +54,7 @@
 (depends-on "helm-flx")
 (depends-on "helm-flycheck")
 (depends-on "hydra")
+(depends-on "ibuffer-vc")
 (depends-on "irony")
 (depends-on "irony-eldoc")
 (depends-on "jedi")

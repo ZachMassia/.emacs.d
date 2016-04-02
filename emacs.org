@@ -370,6 +370,35 @@
 
        (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
      #+END_SRC
+
+**** IBuffer
+
+     Use Purcell's ibuffer-vc for grouping.
+
+     #+BEGIN_SRC emacs-lisp
+       (add-hook 'ibuffer-hook
+                 (lambda ()
+                   (ibuffer-vc-set-filter-groups-by-vc-root)
+                   (unless (eq ibuffer-sorting-mode 'alphabetic)
+                     (ibuffer-do-sort-by-alphabetic))))
+     #+END_SRC
+
+
+     Include version control status info the the ibuffer list.
+
+     #+BEGIN_SRC emacs-lisp
+       (setq ibuffer-formats
+             '((mark modified read-only vc-status-mini " "
+                     (name 18 18 :left :elide)
+                     " "
+                     (size 9 -1 :right)
+                     " "
+                     (mode 16 16 :left :elide)
+                     " "
+                     (vc-status 16 16 :left)
+                     " "
+                     filename-and-process)))
+     #+END_SRC
      
 ** Backup  
    
