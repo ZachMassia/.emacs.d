@@ -1028,6 +1028,29 @@
       (venv-initialize-eshell)
     #+END_SRC
 
+
+    Install some commonly used packages after creating a new virtualenv.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'venv-postmkvirtualenv-hook
+                (lambda ()
+                  (shell-command "pip install jedi")))
+    #+END_SRC
+
+
+    Attempt to automatically switch to a project's virtualenv.
+    
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'python-mode-hook
+                (lambda ()
+                  (hack-local-variables)
+                  (when (boundp 'project-venv-name)
+                    (venv-workon project-venv-name))))
+    #+END_SRC
+
+    Simply add the following to ~.dir-locals~ in your project root.
+    ~((python-mode . ((project-venv-name . "myproject-env"))))~
+    
 *** Racket
 
     #+BEGIN_SRC emacs-lisp
