@@ -132,6 +132,8 @@
        (`darwin     (set-frame-font "Menlo-12"))
        (`gnu/linux  (set-frame-font "Meslo LG M 10"))
        (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
+
+     (setq-default line-spacing 3)
    #+END_SRC
 
 
