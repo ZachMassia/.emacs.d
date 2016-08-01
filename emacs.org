@@ -13,7 +13,7 @@
      - [[#general-setup][General Setup]]
      - [[#clojure][Clojure]]
      - [[#c][C++]]
-     - [[#c][C#]]
+     - [[#c-1][C#]]
      - [[#emacs-lisp][Emacs Lisp]]
      - [[#f][F#]]
      - [[#haskell][Haskell]]
@@ -628,6 +628,16 @@
       (setq cljsbuild-hide-buffer-on-success t
             cljsbuild-compile-command "lein trampoline cljsbuild auto")
     #+END_SRC
+
+    Use inf-clojure and figwheel to run a Clojurescript REPL.
+
+    #+BEGIN_SRC emacs-lisp
+      (defun figwheel-repl ()
+        (interactive)
+        (run-clojure "lein figwheel"))
+
+      (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+    #+END_SRC
     
 
     #+BEGIN_SRC emacs-lisp
@@ -680,12 +690,12 @@
      #+BEGIN_SRC emacs-lisp
        (add-hook 'cider-mode-hook
                  (lambda ()
-                   (cider-turn-on-eldoc-mode)))
+                   (eldoc-mode)))
 
        (add-hook 'cider-repl-mode-hook
                  (lambda ()
                    (setq show-trailing-whitespace nil)
-                   (cider-turn-on-eldoc-mode)
+                   (eldoc-mode)
                    (paredit-mode 1)
                    (hl-line-mode -1)))
 
