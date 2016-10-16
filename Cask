@@ -18,6 +18,7 @@
 (depends-on "company")
 (depends-on "company-c-headers")
 (depends-on "company-irony")
+(depends-on "company-quickhelp")
 (depends-on "concurrent")
 (depends-on "conkeror-minor-mode")
 (depends-on "csharp-mode")
