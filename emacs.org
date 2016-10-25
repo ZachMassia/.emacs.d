@@ -164,14 +164,15 @@
     (use-package exec-path-from-shell
       :ensure t
       :if (eq system-type 'darwin)
-      :init (setq exec-path-from-shell-check-startup-files nil
-                  mac-option-modifier 'super
-                  mac-command-modifier 'meta) ;; Use cmd as meta.
-      :config (progn
-                (exec-path-from-shell-initialize)
-                ;; Make ansi-term play nice with zsh prompt.
-                (defadvice ansi-term (after advise-ansi-term-coding-system)
-                  (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
+      :init
+      (setq exec-path-from-shell-check-startup-files nil
+            mac-option-modifier 'super
+            mac-command-modifier 'meta) ;; Use cmd as meta.
+      :config
+      (exec-path-from-shell-initialize)
+      ;; Make ansi-term play nice with zsh prompt.
+      (defadvice ansi-term (after advise-ansi-term-coding-system)
+        (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
   #+END_SRC
 
 
@@ -184,8 +185,9 @@
       :init
       ;; Prevent Magit from showing it's instructions buffer on each startup.
       (setq magit-last-seen-setup-instructions "1.4.0")
-      :config (use-package magit-popup
-                :ensure t))
+      :config
+      (use-package magit-popup
+        :ensure t))
   #+END_SRC
 
 
@@ -258,7 +260,7 @@
          :ensure t
          :defer 1
          :diminish helm-mode
-         :bind (("M-x"      . helm-M-x)
+         :bind (("M-x"       . helm-M-x)
                 ("M-y"       . helm-show-kill-ring)
                 ("C-x C-f"   . helm-find-files)
                 ("C-c <SPC>" . helm-all-mark-rings)
@@ -270,11 +272,11 @@
                 ("C-h C-f"   . helm-apropos)
                 ("C-h a"     . helm-apropos)
                 ("C-s"       . helm-occur))
-         :config (progn
-                   (require 'helm-config)
-                   (helm-mode)
-                   (helm-autoresize-mode)
-                   (helm-flx-mode)))
+         :config
+         (require 'helm-config)
+         (helm-mode)
+         (helm-autoresize-mode)
+         (helm-flx-mode))
      #+END_SRC
 
 **** Uniquify
@@ -300,10 +302,9 @@
                ac-use-fuzzy t
                ac-auto-show-menu 0.2)
          :config
-         (progn
-           (add-to-list 'ac-dictionary-directories (concat user-emacs-directory "ac-dict"))
-           (ac-config-default)
-           (global-auto-complete-mode)))
+         (add-to-list 'ac-dictionary-directories (concat user-emacs-directory "ac-dict"))
+         (ac-config-default)
+         (global-auto-complete-mode))
      #+END_SRC
 
 **** Org
@@ -348,52 +349,51 @@
                      ("C-(" . backward-slurp-sexp)
                      ("C-)" . forward-slurp-sexp))
          :config
-         (progn
-           ;; Some enhanced fns I found somewhere.
-           (defun forward-barf-sexp (prefix)
-             "Calls `paredit-forward-barf-sexp', unless PREFIX is non nil.
+         ;; Some enhanced fns I found somewhere.
+         (defun forward-barf-sexp (prefix)
+           "Calls `paredit-forward-barf-sexp', unless PREFIX is non nil.
                       With prefix it calls `paredit-barf-all-the-way-forward'"
-             (interactive "P")
-             (if prefix
-                 (paredit-barf-all-the-way-forward)
-               (paredit-forward-barf-sexp)))
+           (interactive "P")
+           (if prefix
+               (paredit-barf-all-the-way-forward)
+             (paredit-forward-barf-sexp)))
 
-           (defun forward-slurp-sexp (prefix)
-             "Calls `paredit-forward-slurp-sexp`, unless PREFIX is non nil.
+         (defun forward-slurp-sexp (prefix)
+           "Calls `paredit-forward-slurp-sexp`, unless PREFIX is non nil.
                       With prefix it calls `paredit-slurp-all-the-way-forward'"
-             (interactive "P")
-             (if prefix
-                 (paredit-slurp-all-the-way-forward)
-               (paredit-forward-slurp-sexp)))
+           (interactive "P")
+           (if prefix
+               (paredit-slurp-all-the-way-forward)
+             (paredit-forward-slurp-sexp)))
 
-           (defun backward-barf-sexp (prefix)
-             "Calls `paredit-backward-barf-sexp', unless PREFIX is non nil.
+         (defun backward-barf-sexp (prefix)
+           "Calls `paredit-backward-barf-sexp', unless PREFIX is non nil.
                       With prefix it calls `paredit-barf-all-the-way-backward'"
-             (interactive "P")
-             (if prefix
-                 (paredit-barf-all-the-way-backward)
-               (paredit-backward-barf-sexp)))
+           (interactive "P")
+           (if prefix
+               (paredit-barf-all-the-way-backward)
+             (paredit-backward-barf-sexp)))
 
-           (defun backward-slurp-sexp (prefix)
-             "Calls `paredit-backward-slurp-sexp', unless PREFIX is non nil.
+         (defun backward-slurp-sexp (prefix)
+           "Calls `paredit-backward-slurp-sexp', unless PREFIX is non nil.
                       With prefix it calls `paredit-slurp-all-the-way-backward'"
-             (interactive "P")
-             (if prefix
-                 (paredit-slurp-all-the-way-backward)
-               (paredit-backward-slurp-sexp)))
+           (interactive "P")
+           (if prefix
+               (paredit-slurp-all-the-way-backward)
+             (paredit-backward-slurp-sexp)))
 
-           ;; Enable Paredit in the minibuffer.
-           (defvar paredit-minibuffer-commands '(eval-expression
-                                                 pp-eval-expression
-                                                 eval-expression-with-eldoc
-                                                 ibuffer-do-eval
-                                                 ibuffer-do-view-and-eval)
-             "Interactive commands for which paredit should be enabled in the minibuffer.")
+         ;; Enable Paredit in the minibuffer.
+         (defvar paredit-minibuffer-commands '(eval-expression
+                                               pp-eval-expression
+                                               eval-expression-with-eldoc
+                                               ibuffer-do-eval
+                                               ibuffer-do-view-and-eval)
+           "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-           (add-hook 'minibuffer-setup-hook
-                     (lambda ()
-                       (if (memq this-command paredit-minibuffer-commands)
-                           (enable-paredit-mode))))))
+         (add-hook 'minibuffer-setup-hook
+                   (lambda ()
+                     (if (memq this-command paredit-minibuffer-commands)
+                         (enable-paredit-mode)))))
      #+END_SRC
 
 **** IBuffer
