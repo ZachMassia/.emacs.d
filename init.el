@@ -1,18 +1,19 @@
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
 (package-initialize)
 
-(defvar cask-el-path
-  (pcase system-type
-    (`darwin    "/usr/local/Cellar/cask/0.8.0/cask.el")
-    (`gnu/linux "/usr/share/cask/cask.el")))
+;; Bootstrap `use-package'.
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-(require 'cask cask-el-path)
-(cask-initialize)
-(require 'pallet)
-(pallet-mode t)
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)
+(require 'bind-key)
 
+;; Load actual config.
 (org-babel-load-file (expand-file-name "emacs.org" user-emacs-directory))

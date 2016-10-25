@@ -7,37 +7,32 @@
    - [[#font][Font]]
  - [[#misc][Misc]]
    - [[#general-package-configuration][General package configuration]]
-   - [[#backup--][Backup  ]]
+   - [[#backup][Backup]]
    - [[#convenience-functions][Convenience functions]]
  - [[#programming-packages][Programming Packages]]
      - [[#general-setup][General Setup]]
-     - [[#clojure][Clojure]]
+     - [[#emacs-lisp][Emacs Lisp]]
      - [[#c][C++]]
      - [[#c-1][C#]]
-     - [[#emacs-lisp][Emacs Lisp]]
-     - [[#f][F#]]
-     - [[#haskell][Haskell]]
+     - [[#clojure][Clojure]]
      - [[#javascript][Javascript]]
-     - [[#lua][Lua]]
-     - [[#python][Python]]
-     - [[#racket][Racket]]
-     - [[#typescript][Typescript]]
-     - [[#rust][Rust]]
 
 * Basic Setup
 
-  Add the lisp subdir to the load path.
-  The utils file is also loaded. It contains a collection of elisp functions
+  Load the utils file. It contains a collection of elisp functions
   collected from the internet.
   
   #+BEGIN_SRC emacs-lisp
-    (defvar lisp-dir
-      (expand-file-name "lisp" user-emacs-directory)
-      "Elisp files not available through Pallet.")
+    (use-package zach-utils
+      :load-path "lisp/")
+  #+END_SRC
 
-    (add-to-list 'load-path lisp-dir)
-
-    (require 'zach-utils)
+  Make sure the theme is available before loading the customize file.
+  
+  #+BEGIN_SRC emacs-lisp
+    (use-package solarized-theme
+      :ensure t
+      :demand)
   #+END_SRC
     
 
@@ -48,13 +43,20 @@
     (load custom-file)
   #+END_SRC
 
+  Create a group for config settings which can be modifed in customize.
+
+  #+BEGIN_SRC emacs-lisp
+    (defgroup my-config nil
+      "Configuration settings"
+      :group 'local)
+  #+END_SRC
 
   Suppress warnings for functions redefined by ~defadvice~.
   
   #+BEGIN_SRC emacs-lisp
     (setq ad-redefinition-action 'accept)
   #+END_SRC
-
+  
 * UI
   
   No need to have the startup message, or tool & scroll bars.
@@ -78,15 +80,18 @@
 
   #+BEGIN_SRC emacs-lisp
     (when window-system
-      (set-frame-size (selected-frame) 140 40))
+      (set-frame-size (selected-frame) 150 40))
   #+END_SRC
 
 
   Show git diffs in the left fringe.
 
   #+BEGIN_SRC emacs-lisp
-    (when (window-system)
-      (global-git-gutter-mode +1))
+    (use-package git-gutter-fringe
+      :ensure t
+      :defer 5
+      :diminish git-gutter-mode
+      :config (global-git-gutter-mode))
   #+END_SRC
 
 
@@ -94,10 +99,12 @@
   will get the safe theme prompt on each startup.
 
   #+BEGIN_SRC emacs-lisp
-    (setq sml/theme 'respectful)
-    (sml/setup)
-    (setq sml/shorten-directory t
-          sml/shorten-modes t)
+    (use-package smart-mode-line
+      :ensure t
+      :init (setq sml/theme 'respectful
+                  sml/shorten-directory t
+                  sml/shorten-modes t)
+      :config (sml/setup))
   #+END_SRC
 
 
@@ -105,8 +112,7 @@
   and mouse
 
   #+BEGIN_SRC emacs-lisp
-    (setq redisplay-dont-pause t
-          scroll-margin 1
+    (setq scroll-margin 1
           scroll-step 1
           scroll-conservatively 10000
           scroll-preserve-screen-position 1
@@ -129,7 +135,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (pcase system-type
-       (`darwin     (set-frame-font "Menlo-12"))
+       (`darwin     (set-frame-font "SF Mono-12"))
        (`gnu/linux  (set-frame-font "Meslo LG M 10"))
        (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
@@ -155,23 +161,31 @@
   Some OSX specific settings. 
 
   #+BEGIN_SRC emacs-lisp
-    (when (eq system-type 'darwin)
-      (setq exec-path-from-shell-check-startup-files nil)
-      ;; Grab $PATH from ~/.zshrc
-      (exec-path-from-shell-initialize)
-      ;; Use command key as meta
-      (setq mac-option-modifier 'super
-            mac-command-modifier 'meta)
-      ;; Make ansi-term play nice with zsh prompt
-      (defadvice ansi-term (after advise-ansi-term-coding-system)
-        (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))
+    (use-package exec-path-from-shell
+      :ensure t
+      :if (eq system-type 'darwin)
+      :init (setq exec-path-from-shell-check-startup-files nil
+                  mac-option-modifier 'super
+                  mac-command-modifier 'meta) ;; Use cmd as meta.
+      :config (progn
+                (exec-path-from-shell-initialize)
+                ;; Make ansi-term play nice with zsh prompt.
+                (defadvice ansi-term (after advise-ansi-term-coding-system)
+                  (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
   #+END_SRC
 
 
   Prevent Magit from showing it's instructions buffer on each startup.
 
   #+BEGIN_SRC emacs-lisp
-    (setq magit-last-seen-setup-instructions "1.4.0")
+    (use-package magit
+      :ensure t
+      :bind ("C-x g" . magit-status)
+      :init
+      ;; Prevent Magit from showing it's instructions buffer on each startup.
+      (setq magit-last-seen-setup-instructions "1.4.0")
+      :config (use-package magit-popup
+                :ensure t))
   #+END_SRC
 
 
@@ -181,7 +195,6 @@
     (fill-keymap 'global
                  "C-x C-b" 'ibuffer
                  "C-a"     'smart-line-beginning
-                 "C-x g"   'magit-status
                  "<f11>"   'toggle-fullscreen
                  "C-c e"   'erc-start-or-switch
                  "C-c t"   'visit-term-buffer
@@ -191,8 +204,9 @@
 ** General package configuration
 
    #+BEGIN_SRC emacs-lisp
-     (setq whitespace-style '(face empty lines-tail trailing)
-           whitespace-line-column 100)
+     (use-package whitespace
+       :init (setq whitespace-style '(face empty lines-tail trailing)
+                   whitespace-line-column 100))
 
      (column-number-mode 1)
 
@@ -203,59 +217,64 @@
    Enable the EditorConfig plugin.
 
    #+BEGIN_SRC emacs-lisp
-     (editorconfig-mode 1)
+     (use-package editorconfig
+       :ensure t
+       :defer 2
+       :config (editorconfig-mode))
    #+END_SRC
 
 **** Projectile
      #+BEGIN_SRC emacs-lisp
-       (require 'projectile)
-       (projectile-global-mode)
+              (use-package projectile
+                :ensure t
+                :defer 2
+                :config
+                (projectile-mode)
+                (use-package helm-projectile
+                  :ensure t
+                  :bind ("C-c p h")
+                  :config (helm-projectile-on)))
      #+END_SRC
 
 **** Helm
 
      #+BEGIN_SRC emacs-lisp
-       (require 'helm-config)
-       (helm-mode 1)
-       (helm-autoresize-mode 1)
-       (helm-flx-mode 1)
-     #+END_SRC
+       (use-package helm-company
+         :ensure t
+         :bind (:map company-mode-map
+                     ("C-:" . helm-company)
+                     :map company-active-map
+                     ("C-:" . helm-company)))
 
+       (use-package helm-flx
+         :ensure t)
 
-     Setup the global Helm key bindings.
+       (use-package helm-flycheck
+         :ensure t
+         :bind (:map flycheck-mode-map
+                     ("C-c ! h" . helm-flycheck)))
 
-     #+BEGIN_SRC emacs-lisp
-       (fill-keymap 'global
-                    "M-x"       'helm-M-x
-                    "M-y"       'helm-show-kill-ring
-                    "C-x C-f"   'helm-find-files
-                    "C-c <SPC>" 'helm-all-mark-rings
-                    "C-x r b"   'helm-filtered-bookmarks
-                    "C-h r"     'helm-info-emacs
-                    "C-,"       'helm-calcul-expression
-                    "C-h i"     'helm-info-at-point
-                    "C-x C-d"   'helm-browse-project
-                    "C-h C-f"   'helm-apropos
-                    "C-h a"     'helm-apropos
-                    "C-s"       'helm-occur)
-     #+END_SRC
-
-
-     Add some key bindings for helm-company.
-
-     #+BEGIN_SRC emacs-lisp
-       (eval-after-load 'company
-         '(progn
-            (define-key company-mode-map (kbd "C-:") 'helm-company)
-            (define-key company-active-map (kbd "C-:") 'helm-company)))
-     #+END_SRC
-     
-
-     Add a key for helm-flycheck as well.
-
-     #+BEGIN_SRC emacs-lisp
-       (eval-after-load 'flycheck
-         '(define-key flycheck-mode-map (kbd "C-c ! h") 'helm-flycheck))
+       (use-package helm
+         :ensure t
+         :defer 1
+         :diminish helm-mode
+         :bind (("M-x"      . helm-M-x)
+                ("M-y"       . helm-show-kill-ring)
+                ("C-x C-f"   . helm-find-files)
+                ("C-c <SPC>" . helm-all-mark-rings)
+                ("C-x r b"   . helm-filtered-bookmarks)
+                ("C-h r"     . helm-info-emacs)
+                ("C-,"       . helm-calcul-expression)
+                ("C-h i"     . helm-info-at-point)
+                ("C-x C-d"   . helm-browse-project)
+                ("C-h C-f"   . helm-apropos)
+                ("C-h a"     . helm-apropos)
+                ("C-s"       . helm-occur))
+         :config (progn
+                   (require 'helm-config)
+                   (helm-mode)
+                   (helm-autoresize-mode)
+                   (helm-flx-mode)))
      #+END_SRC
 
 **** Uniquify
@@ -272,135 +291,109 @@
 
 **** Auto Complete
      #+BEGIN_SRC emacs-lisp
-       (require 'auto-complete-config)
-
-       (add-to-list 'ac-dictionary-directories (concat user-emacs-directory "ac-dict"))
-       (ac-config-default)
-
-       (setq ac-auto-start 0
-             ac-quick-help-delay 0.5
-             ac-fuzzy-enable t
-             ac-use-fuzzy t
-             ac-auto-show-menu 0.2)
-     #+END_SRC
-
-
-     Use auto complete all the time.
-
-     #+BEGIN_SRC emacs-lisp
-       (global-auto-complete-mode t)
+       (use-package auto-complete
+         :ensure t
+         :init
+         (setq ac-auto-start 0
+               ac-quick-help-delay 0.5
+               ac-fuzzy-enable t
+               ac-use-fuzzy t
+               ac-auto-show-menu 0.2)
+         :config
+         (progn
+           (add-to-list 'ac-dictionary-directories (concat user-emacs-directory "ac-dict"))
+           (ac-config-default)
+           (global-auto-complete-mode)))
      #+END_SRC
 
 **** Org
 
-     Enable spell checking.
+     Enable spell checking and syntax highlighting in ~org-mode~.
      
      #+BEGIN_SRC emacs-lisp
-       (add-hook 'org-mode-hook 'flyspell-mode)
+       (use-package org
+         :init (setq org-src-fontify-natively t)
+         :config (flyspell-mode))
      #+END_SRC
-
-
-     Enable syntax highlighting of code blocks
-
-     #+BEGIN_SRC emacs-lisp
-       (setq org-src-fontify-natively t)
-     #+END_SRC
-
 
      Enable ~toc-org~ so this file can have a ToC in Github without any exporting.
 
      #+BEGIN_SRC emacs-lisp
-       (add-hook 'org-mode-hook 'toc-org-enable)
+       (use-package toc-org
+         :ensure t
+         :commands toc-org-enable
+         :init (add-hook 'org-mode-hook 'toc-org-enable))
      #+END_SRC
      
 **** Paredit
 
-     Some enhanced fns I found somewhere on the internet.
-
      #+BEGIN_SRC emacs-lisp
-       (require 'paredit)
+       (use-package paredit
+         :ensure t
+         :bind (:map paredit-mode-map
+                     ("M-s" . paredit-splice-sexp)
+                     ("M-S" . paredit-split-sexp)
+                     ("M-j" . paredit-join-sexps)
 
-       (defun forward-barf-sexp (prefix)
-         "Calls `paredit-forward-barf-sexp', unless PREFIX is non nil.
-         With prefix it calls `paredit-barf-all-the-way-forward'"
-         (interactive "P")
-         (if prefix
-             (paredit-barf-all-the-way-forward)
-           (paredit-forward-barf-sexp)))
+                     ("M-o" . paredit-forward-down)
+                     ("M-O" . paredit-forward-up)
+                     ("M-u" . paredit-backward-down)
+                     ("M-U" . paredit-backward-up)
 
-       (defun forward-slurp-sexp (prefix)
-         "Calls `paredit-forward-slurp-sexp`, unless PREFIX is non nil.
-         With prefix it calls `paredit-slurp-all-the-way-forward'"
-         (interactive "P")
-         (if prefix
-             (paredit-slurp-all-the-way-forward)
-           (paredit-forward-slurp-sexp)))
+                     ("M-l" . paredit-forward)
+                     ("M-h" . paredit-backward)
+                     ("M-k" . paredit-kill)
+                     ("M-(" . backward-barf-sexp)
+                     ("M-)" . forward-barf-sexp)
+                     ("C-(" . backward-slurp-sexp)
+                     ("C-)" . forward-slurp-sexp))
+         :config
+         (progn
+           ;; Some enhanced fns I found somewhere.
+           (defun forward-barf-sexp (prefix)
+             "Calls `paredit-forward-barf-sexp', unless PREFIX is non nil.
+                      With prefix it calls `paredit-barf-all-the-way-forward'"
+             (interactive "P")
+             (if prefix
+                 (paredit-barf-all-the-way-forward)
+               (paredit-forward-barf-sexp)))
 
-       (defun backward-barf-sexp (prefix)
-         "Calls `paredit-backward-barf-sexp', unless PREFIX is non nil.
-         With prefix it calls `paredit-barf-all-the-way-backward'"
-         (interactive "P")
-         (if prefix
-             (paredit-barf-all-the-way-backward)
-           (paredit-backward-barf-sexp)))
+           (defun forward-slurp-sexp (prefix)
+             "Calls `paredit-forward-slurp-sexp`, unless PREFIX is non nil.
+                      With prefix it calls `paredit-slurp-all-the-way-forward'"
+             (interactive "P")
+             (if prefix
+                 (paredit-slurp-all-the-way-forward)
+               (paredit-forward-slurp-sexp)))
 
-       (defun backward-slurp-sexp (prefix)
-         "Calls `paredit-backward-slurp-sexp', unless PREFIX is non nil.
-         With prefix it calls `paredit-slurp-all-the-way-backward'"
-         (interactive "P")
-         (if prefix
-             (paredit-slurp-all-the-way-backward)
-           (paredit-backward-slurp-sexp)))
-     #+END_SRC
+           (defun backward-barf-sexp (prefix)
+             "Calls `paredit-backward-barf-sexp', unless PREFIX is non nil.
+                      With prefix it calls `paredit-barf-all-the-way-backward'"
+             (interactive "P")
+             (if prefix
+                 (paredit-barf-all-the-way-backward)
+               (paredit-backward-barf-sexp)))
 
+           (defun backward-slurp-sexp (prefix)
+             "Calls `paredit-backward-slurp-sexp', unless PREFIX is non nil.
+                      With prefix it calls `paredit-slurp-all-the-way-backward'"
+             (interactive "P")
+             (if prefix
+                 (paredit-slurp-all-the-way-backward)
+               (paredit-backward-slurp-sexp)))
 
-     Enable Paredit in the minibuffer
+           ;; Enable Paredit in the minibuffer.
+           (defvar paredit-minibuffer-commands '(eval-expression
+                                                 pp-eval-expression
+                                                 eval-expression-with-eldoc
+                                                 ibuffer-do-eval
+                                                 ibuffer-do-view-and-eval)
+             "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-     #+BEGIN_SRC emacs-lisp
-       (defvar paredit-minibuffer-commands '(eval-expression
-                                             pp-eval-expression
-                                             eval-expression-with-eldoc
-                                             ibuffer-do-eval
-                                             ibuffer-do-view-and-eval)
-         "Interactive commands for which paredit should be enabled in the minibuffer.")
-
-       (add-hook 'minibuffer-setup-hook
-                 (lambda ()
-                   (if (memq this-command paredit-minibuffer-commands)
-                       (enable-paredit-mode))))
-     #+END_SRC
-
-
-     Paredit key bindings.
-
-     #+BEGIN_SRC emacs-lisp
-       (fill-keymap paredit-mode-map
-                    "M-s" 'paredit-splice-sexp
-                    "M-S" 'paredit-split-sexp
-                    "M-j" 'paredit-join-sexps
-
-                    "M-o" 'paredit-forward-down
-                    "M-O" 'paredit-forward-up
-                    "M-u" 'paredit-backward-down
-                    "M-U" 'paredit-backward-up
-
-                    "M-l" 'paredit-forward
-                    "M-h" 'paredit-backward
-                    "M-k" 'paredit-kill
-                    "M-(" 'backward-barf-sexp
-                    "M-)" 'forward-barf-sexp
-                    "C-(" 'backward-slurp-sexp
-                    "C-)" 'forward-slurp-sexp)
-     #+END_SRC
-  
-**** Magit
-
-     Enable gitflow in magit.
-
-     #+BEGIN_SRC emacs-lisp
-       (require 'magit-gitflow)
-
-       (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+           (add-hook 'minibuffer-setup-hook
+                     (lambda ()
+                       (if (memq this-command paredit-minibuffer-commands)
+                           (enable-paredit-mode))))))
      #+END_SRC
 
 **** IBuffer
@@ -408,28 +401,26 @@
      Use Purcell's ibuffer-vc for grouping.
 
      #+BEGIN_SRC emacs-lisp
-       (add-hook 'ibuffer-hook
-                 (lambda ()
-                   (ibuffer-vc-set-filter-groups-by-vc-root)
-                   (unless (eq ibuffer-sorting-mode 'alphabetic)
-                     (ibuffer-do-sort-by-alphabetic))))
-     #+END_SRC
-
-
-     Include version control status info the the ibuffer list.
-
-     #+BEGIN_SRC emacs-lisp
-       (setq ibuffer-formats
-             '((mark modified read-only vc-status-mini " "
-                     (name 18 18 :left :elide)
-                     " "
-                     (size 9 -1 :right)
-                     " "
-                     (mode 16 16 :left :elide)
-                     " "
-                     (vc-status 16 16 :left)
-                     " "
-                     filename-and-process)))
+       (use-package ibuffer-vc
+         :ensure t
+         :defer 5
+         :init
+         ;; Include version control status info in the ibuffer list.
+         (setq ibuffer-formats
+               '((mark modified read-only vc-status-mini " "
+                       (name 18 18 :left :elide)
+                       " "
+                       (size 9 -1 :right)
+                       " "
+                       (mode 16 16 :left :elide)
+                       " "
+                       (vc-status 16 16 :left)
+                       " "
+                       filename-and-process)))
+         :config (add-hook 'ibuffer-hook (lambda()
+                                           (ibuffer-vc-set-filter-groups-by-vc-root)
+                                           (unless (eq ibuffer-sorting-mode 'alphabetic)
+                                             (ibuffer-do-sort-by-alphabetic)))))
      #+END_SRC
      
 ** Backup  
@@ -465,7 +456,7 @@
              (ansi-term (getenv "SHELL")))
          (switch-to-buffer-other-window "*ansi-term*")))
    #+END_SRC
-      
+   
 * Programming Packages
 
 *** General Setup
@@ -473,11 +464,12 @@
     Set some keywords to be highlighted.
 
     #+BEGIN_SRC emacs-lisp
-      (require 'fic-mode)
-
-      (setq fic-highlighted-words '("FIXME" "FIXME:" "TODO" "TODO:"
-                                    "HACK" "HACK:" "NOTE" "NOTE:"
-                                    "BUG" "BUG:" "REFACTOR" "REFACTOR:"))
+      (use-package fic-mode
+        :ensure t
+        :commands (fic-mode)
+        :init (setq fic-highlighted-words '("FIXME" "FIXME:" "TODO" "TODO:"
+                                            "HACK" "HACK:" "NOTE" "NOTE:"
+                                            "BUG" "BUG:" "REFACTOR" "REFACTOR:")))
     #+END_SRC
 
 
@@ -498,17 +490,25 @@
           haskell-mode
           rst-mode
           arduino-mode)
-        "What to consider as programming languages.")
+        "What to consider as programming languages."
+        :group 'my-config)
+
+      (use-package rainbow-delimiters
+        :ensure t
+        :commands (rainbow-delimiters-mode))
+
+      (use-package autopair
+        :ensure t
+        :commands (autopair-mode))
 
       (dolist (mode programming-language-major-modes)
         (add-hook
          (intern (concat (symbol-name mode) "-hook"))
          (lambda ()
-           (fic-mode 1)
-           (rainbow-delimiters-mode 1)
-           (yas-minor-mode 1)
-           (whitespace-mode 1)
-           (autopair-mode 1))))
+           (fic-mode)
+           (rainbow-delimiters-mode)
+           (whitespace-mode)
+           (autopair-mode))))
     #+END_SRC
 
 
@@ -523,46 +523,51 @@
     Setup flycheck. 
 
     #+BEGIN_SRC emacs-lisp
-      (require 'flycheck)
+      (use-package flycheck
+        :ensure t
+        :defer 5
+        :commands (global-flycheck-mode flycheck-add-mode)
 
-      (add-hook 'after-init-hook #'global-flycheck-mode)
-      (setq flycheck-completion-system 'ido
-            flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+        :init
+        (global-flycheck-mode)
+        (setq flycheck-completion-system 'ido
+              flycheck-disabled-checkers '(emacs-lisp-checkdoc))
 
-      (defun magnars/adjust-flycheck-automatic-syntax-eagerness ()
-        "Adjust how often we check for errors based on if there are any.
+        ;; Remove newline checks, since they would trigger an immediate check
+        ;; when we want the idle-change-delay to be in effect while editing.
+        (setq flycheck-check-syntax-automatically '(save
+                                                    idle-change
+                                                    mode-enabled))
 
-         This lets us fix any errors as quickly as possible, but in a
-         clean buffer we're an order of magnitude laxer about checking."
-        (setq flycheck-idle-change-delay
-              (if flycheck-current-errors 0.5 5.0)))
 
-      ;; Each buffer gets its own idle-change-delay because of the
-      ;; buffer-sensitive adjustment above.
-      (make-variable-buffer-local 'flycheck-idle-change-delay)
+        :config
+        (defun magnars/adjust-flycheck-automatic-syntax-eagerness ()
+          "Adjust how often we check for errors based on if there are any.
 
-      (add-hook 'flycheck-after-syntax-check-hook
-                'magnars/adjust-flycheck-automatic-syntax-eagerness)
+      This lets us fix any errors as quickly as possible, but in a clean buffer we're an order
+      of magnitude laxer about checking."
+          (setq flycheck-idle-change-delay
+                (if flycheck-current-errors 0.5 5.0)))
 
-      ;; Remove newline checks, since they would trigger an immediate check
-      ;; when we want the idle-change-delay to be in effect while editing.
-      (setq flycheck-check-syntax-automatically '(save
-                                                  idle-change
-                                                  mode-enabled))
+        (add-hook 'flycheck-after-syntax-check-hook
+                  'magnars/adjust-flycheck-automatic-syntax-eagerness)
 
-      (defun flycheck-handle-idle-change ()
-        "Handle an expired idle time since the last change.
+        ;; Each buffer gets its own idle-change-delay because of the
+        ;; buffer-sensitive adjustment above.
+        (make-variable-buffer-local 'flycheck-idle-change-delay)
 
-         This is an overwritten version of the original
-         flycheck-handle-idle-change, which removes the forced deferred.
-         Timers should only trigger inbetween commands in a single
-         threaded system and the forced deferred makes errors never show
-         up before you execute another command."
-        (flycheck-clear-idle-change-timer)
-        (flycheck-buffer-automatically 'idle-change))
+        (defun flycheck-handle-idle-change ()
+          "Handle an expired idle time since the last change.
 
-      (eval-after-load 'flycheck
-        '(flycheck-package-setup))
+      This is an overwritten version of the original flycheck-handle-idle-change, which removes
+      the forced deferred. Timers should only trigger inbetween commands in a single threaded
+      system and the forced deferred makes errors never show up before you execute another command."
+          (flycheck-clear-idle-change-timer)
+          (flycheck-buffer-automatically 'idle-change))
+
+        (use-package flycheck-package
+          :ensure t
+          :config (flycheck-package-setup)))
     #+END_SRC
 
 
@@ -571,340 +576,9 @@
     #+BEGIN_SRC emacs-lisp
       (setq c-default-style "stroustrup")
     #+END_SRC
-    
-    
-*** Clojure
-
-    #+BEGIN_SRC emacs-lisp
-      (require 'cider)
-      (require 'cider-eldoc)
-      (require 'ac-cider)
-      (require 'clojure-mode)
-      (require 'cljsbuild-mode)
-    #+END_SRC
-
-    
-    Use auto complete in a Cider REPL
-
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'cider-mod-hook 'ac-flyspell-workaround)
-      (add-hook 'cider-mod-hook 'ac-cider-setup)
-      (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-      (eval-after-load "auto-complete"
-        '(progn
-           (add-to-list 'ac-modes 'cider-mode)
-           (add-to-list 'ac-modes 'cider-repl-mode)))
-    #+END_SRC
-
-    
-    On OSX, each Java process started by Cider or Leiningen will show up on
-    the dock. The following option prevents that.
-
-    #+BEGIN_SRC emacs-lisp
-      (eval-after-load "clojure-mode"
-        '(setenv "LEIN_JVM_OPTS" "-Dapple.awt.UIElement=true"))
-    #+END_SRC
-
-    
-    Set up some custom indentation rules.
-    
-    #+BEGIN_SRC emacs-lisp
-      (define-clojure-indent
-        (defroutes 'defun)
-        (GET 2)
-        (POST 2)
-        (PUT 2)
-        (DELETE 2)
-        (HEAD 2)
-        (ANY 2)
-        (context 2))
-    #+END_SRC
-
-    
-    Use "lein trampoline" when building Clojurescript, and hide the buffer
-    when the build was successful.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq cljsbuild-hide-buffer-on-success t
-            cljsbuild-compile-command "lein trampoline cljsbuild auto")
-    #+END_SRC
-
-    Use inf-clojure and figwheel to run a Clojurescript REPL.
-
-    #+BEGIN_SRC emacs-lisp
-      (defun figwheel-repl ()
-        (interactive)
-        (run-clojure "lein figwheel"))
-
-      (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
-    #+END_SRC
-    
-
-    #+BEGIN_SRC emacs-lisp
-      (setq nrepl-hide-special-buffers t
-            cider-auto-select-error-buffer nil
-            cider-repl-result-prefix ";; => "
-            cider-repl-use-pretty-printing t
-            cider-repl-use-clojure-font-lock t)
-    #+END_SRC
-
-
-    Save buffer before testing or loading.
-
-    #+BEGIN_SRC emacs-lisp
-      (defadvice clojure-test-run-tests (before save-first activate)
-        (save-buffer))
-
-      (defadvice cider-load-current-buffer (before save-first activate)
-        (save-buffer))
-    #+END_SRC
-
-
-    Use symbols for 'fn', function literals, and sets.
-
-    #+BEGIN_SRC emacs-lisp
-      (eval-after-load 'clojure-mode
-        '(font-lock-add-keywords
-          'clojure-mode `(("(\\(fn\\)[\[[:space:]]"
-                           (0 (progn (compose-region (match-beginning 1)
-                                                     (match-end 1) "λ")
-                                     nil))))))
-
-      (eval-after-load 'clojure-mode
-        '(font-lock-add-keywords
-          'clojure-mode `(("\\(#\\)("
-                           (0 (progn (compose-region (match-beginning 1)
-                                                     (match-end 1) "ƒ")
-                                     nil))))))
-
-      (eval-after-load 'clojure-mode
-        '(font-lock-add-keywords
-          'clojure-mode `(("\\(#\\){"
-                           (0 (progn (compose-region (match-beginning 1)
-                                                     (match-end 1) "∈")
-                                     nil))))))
-    #+END_SRC
-    
-**** Hooks
-
-     #+BEGIN_SRC emacs-lisp
-       (add-hook 'cider-mode-hook
-                 (lambda ()
-                   (eldoc-mode)))
-
-       (add-hook 'cider-repl-mode-hook
-                 (lambda ()
-                   (setq show-trailing-whitespace nil)
-                   (eldoc-mode)
-                   (paredit-mode 1)
-                   (hl-line-mode -1)))
-
-       (add-hook 'clojure-mode-hook
-                 (lambda ()
-                   (clj-refactor-mode 1)
-                   (cider-mode 1)
-                   (fill-keymap cider-mode-map
-                                "C-c c-e" 'cider-eval-defun-at-point
-                                "C-c C-h" 'clojure-cheatsheet
-                                "C-c C-m" nil
-                                "C-x C-i" 'align-cljlet
-                                ;; Next two give error for some reason
-                                               ;"C-c c"   'count-last-sexp
-                                               ;"C-c n"   'nth-from-last-sexp
-                                )
-                   (cljr-add-keybindings-with-prefix "C-c C-m")
-                   (clojure-test-mode 1)
-                   (autopair-mode 1)
-                   (paredit-mode 1)
-                   (local-set-key (kbd "RET") 'newline-and-indent)))
-     #+END_SRC
-
-**** Kibit
-
-     Emacs integration for Kibit, a static code analyzer.
-     
-     Teach compile the syntax of the Kibit output.
-
-     #+BEGIN_SRC emacs-lisp
-       (require 'compile)
-       (add-to-list 'compilation-error-regexp-alist-alist
-                    '(kibit "At \\([^:]+\\):\\([[:digit:]]+\\):" 1 2 nil 0))
-       (add-to-list 'compilation-error-regexp-alist 'kibit)
-     #+END_SRC
-
-
-     Some functions for running Kibit on a buffer and a project.
-
-     #+BEGIN_SRC emacs-lisp
-       (defun kibit ()
-         "Run kibit on the current project.
-       Display the results in a hyperlinked *compilation* buffer."
-         (interactive)
-         (compile "lein kibit"))
-
-       (defun kibit-current-file ()
-         "Run kibit on the current file.
-       Display the results in a hyperlinked *compilation* buffer."
-         (interactive)
-         (compile (concat "lein kibit " buffer-file-name)))
-     #+END_SRC
-
-**** 4clojure
-
-     Some 4clojure helper fn's.
-
-     #+BEGIN_SRC emacs-lisp
-       (defun 4clojure-check-and-proceed ()
-         "Check the answer and show the next question if it worked"
-         (interactive)
-         (unless
-             (save-excursion
-               ;; Find last sexp (the answer.)
-               (goto-char (point-max))
-               (forward-sexp -1)
-               ;; Check the answer.
-               (cl-letf ((answer
-                          (buffer-substring (point) (point-max)))
-                         ;; Preserve buffer contents, in case you failed.
-                         ((buffer-string)))
-                 (goto-char (point-min))
-                 (while (search-forward "__" nil t)
-                   (replace-match answer))
-                 (string-match "failed." (4clojure-check-answers))))
-           (4clojure-next-question)))
-
-       (defadvice 4clojure/start-new-problem
-           (after 4clojure/start-new-problem-advice () activate)
-         ;; Prettify the 4clojure buffer.
-         (goto-char (point-min))
-         (forward-line 2)
-         (forward-char 3)
-         (fill-paragraph)
-         ;; Position point for the answer
-         (goto-char (point-max))
-         (insert "\n\n\n")
-         (forward-char -1)
-         ;; Define our key.
-         (local-set-key (kbd "M-j") #'4clojure-check-and-proceed))
-
-       (defadvice 4clojure-open-question
-           (around 4clojure-open-question-around)
-         "Start a cider/nREPL connection if one hasn't already been started when
-       opening 4clojure questions"
-         ad-do-it
-         (unless cider-current-clojure-buffer
-           (cider-jack-in)))
-     #+END_SRC
-
-**** Misc Functions
-
-     #+BEGIN_SRC emacs-lisp
-       (defun count-last-sexp ()
-         (interactive)
-         (cider-interactive-eval
-          (format "(count %s)"
-                  (cider-last-sexp))))
-
-       (defun nth-from-last-sexp (n)
-         (interactive "p")
-         (cider-interactive-eval
-          (format "(nth %s %s)"
-                  (cider-last-sexp) n)))
-
-
-       (defun cider-namespace-refresh ()
-         (interactive)
-         (cider-eval-sync
-          "(require '[clojure.tools.namespace.repl :refer [refresh]])
-           (refresh)"
-          (cider-current-ns)))
-
-
-       (require 'projectile)
-       (defun lein-server ()
-         "Run 'lein server' in the project root."
-         (interactive)
-         (projectile-with-default-dir (projectile-project-root)
-           (start-process "lein-server" "*lein-server*" "lein" "trampoline" "server")))
-
-     #+END_SRC
-
-*** C++
-
-    Add the required company backends.
-
-    #+BEGIN_SRC emacs-lisp
-      (with-eval-after-load 'company
-        (add-to-list 'company-backends 'company-irony)
-        (add-to-list 'company-backends 'company-c-headers))
-
-    #+END_SRC
-
-
-    Set company-mode to try and complete instantly.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq company-idle-delay 0)
-    #+END_SRC
-    
-
-    Add irony-mode and platformio-mode to c/c++ mode.
-
-    #+BEGIN_SRC emacs-lisp
-      (defun irony-and-platformio-hook ()
-        (irony-mode 1)
-        (irony-eldoc 1)
-        (platformio-conditionally-enable))
-
-      (add-hook 'c-mode-hook 'irony-and-platformio-hook)
-
-      (add-hook 'c++-mode-hook 'irony-and-platformio-hook)
-    #+END_SRC
-
-
-    Replace the `completion-at-point' and `complete-symbol' bindings in
-    irony-mode's buffers by irony-mode's function.
-    
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'irony-mode-hook
-                (lambda ()
-                  (define-key irony-mode-map [remap completion-at-point]
-                    'irony-completion-at-point-async)
-
-                  (define-key irony-mode-map [remap complete-symbol]
-                    'irony-completion-at-point-async)
-
-                  (irony-cdb-autosetup-compile-options)))
-    #+END_SRC
-
-    
-    Use Flycheck with Irony.
-
-    #+BEGIN_SRC emacs-lisp
-      (eval-after-load 'flycheck
-        '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-    #+END_SRC
-
-
-    Setup the compilation buffer to work with PlatformIO-Mode.
-
-    #+BEGIN_SRC emacs-lisp
-      (require 'platformio-mode)
-
-      (platformio-setup-compile-buffer)
-    #+END_SRC
-
-*** C#
-    
-    #+BEGIN_SRC emacs-lisp
-      (require 'csharp-mode)
-      (require 'omnisharp)
-
-      (add-hook 'csharp-mode-hook 'omnisharp-mode)
-    #+END_SRC
 
 *** Emacs Lisp
-
+    
     Setup auto complete for elisp.
 
     #+BEGIN_SRC emacs-lisp
@@ -913,15 +587,14 @@
       (defun ielm-auto-complete ()
         "Enables `auto-complete' support in \\[ielm]."
         (setq ac-sources '(ac-source-functions
-                   ac-source-variables
-                   ac-source-features
-                   ac-source-symbols
-                   ac-source-words-in-same-mode-buffers))
+                           ac-source-variables
+                           ac-source-features
+                           ac-source-symbols
+                           ac-source-words-in-same-mode-buffers))
         (add-to-list 'ac-modes 'inferior-emacs-lisp-mode))
       (add-hook 'ielm-mode-hook 'ielm-auto-complete)
     #+END_SRC
 
-    
     Enable a few packages for elisp-related modes.
 
     #+BEGIN_SRC emacs-lisp
@@ -931,180 +604,245 @@
           ielm-mode)
         "Modes that are used to do Elisp programming.")
 
-      (require 'eldoc)
+      (use-package pretty-lambdada
+        :ensure t
+        :commands (pretty-lambda-mode))
+
+      (defun my-elisp-setup ()
+        "Enable some packages for any elisp related buffer."
+        (eldoc-mode)
+        (paredit-mode)
+        (autopair-mode)
+        (rainbow-delimiters-mode)
+        (pretty-lambda-mode))
 
       (dolist (mode elisp-programming-major-modes)
-        (add-hook
-         (intern (concat (symbol-name mode) "-hook"))
-         (lambda ()
-           (turn-on-eldoc-mode)
-           (paredit-mode 1)
-           (autopair-mode 1)
-           (rainbow-delimiters-mode 1)
-           (pretty-lambda-mode 1))))
+        (add-hook (intern (concat (symbol-name mode) "-hook"))
+                  'my-elisp-setup))
     #+END_SRC
 
-*** F#
+*** C++
+    
+    Configure company and add the required company backends.
     
     #+BEGIN_SRC emacs-lisp
-      (require 'fsharp-mode)
-      (setq inferior-fsharp-program "/usr/local/bin/fsharpi --readline-"
-            fsharp-compiler "/usr/local/bin/fsharpc")
+      (use-package company
+        :ensure t
+        :commands (company-mode)
+        :init
+        ;; Set company-mode to try and complete instantly.
+        (setq company-idle-delay 0)
+        :config
+        (use-package company-irony
+          :ensure t
+          :init (add-to-list 'company-backends 'company-irony))
 
-      (add-hook 'fsharp-mode-hook
-                (lambda ()
-                  (auto-complete-mode t)
-                  (autopair-mode t)))
+        (use-package company-c-headers
+          :ensure t
+          :init (add-to-list 'company-backends 'company-c-headers)))
     #+END_SRC
 
-*** Haskell
+
+    Add irony-mode and platformio-mode to c/c++ mode.
+    
+    #+BEGIN_SRC emacs-lisp
+      (use-package irony
+        :ensure t
+        :commands (irony-mode))
+
+      (use-package irony-eldoc
+        :ensure t
+        :commands (irony-eldoc))
+
+      (use-package platformio-mode
+        :ensure t
+        :commands (platformio-conditionally-enable)
+        :config (platformio-setup-compile-buffer))
+
+      (defun irony-and-platformio-hook ()
+        (irony-mode)
+        (irony-eldoc)
+        (platformio-conditionally-enable))
+
+      (add-hook 'c-mode-hook 'irony-and-platformio-hook)
+      (add-hook 'c++-mode-hook 'irony-and-platformio-hook)
+    #+END_SRC
+
+    
+    Replace the ~completion-at-point~ and ~complete-symbol~ bindings in 
+    irony-mode's buffers by the async functions.
+    
+    #+BEGIN_SRC emacs-lisp
+      (defun irony-use-async-ac ()
+        (define-key irony-mode-map [remap completion-at-point]
+          'irony-completion-at-point-async)
+
+        (define-key irony-mode-map [remap completion-symbol]
+          'irony-completion-at-point-async)
+        (irony-cdb-autosetup-compile-options))
+
+      (add-hook 'irony-mode-hook 'irony-use-async-ac)
+    #+END_SRC
+    
+    
+    Use Flycheck with Irony.
 
     #+BEGIN_SRC emacs-lisp
-      (require 'haskell-mode)
+      (use-package flycheck-irony
+        :ensure t
+        :defer 2
+        :init (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+    #+END_SRC
 
-      (add-hook 'haskell-mode-hook
-                (lambda ()
-                  (turn-on-haskell-indentation)
-                  (auto-complete-mode)
-                  (autopair-mode)
-                  (eldoc-mode)))
+*** C#
+    
+    #+BEGIN_SRC emacs-lisp
+      (use-package csharp-mode
+        :ensure t
+        :defer t
+        :config
+        (use-package omnisharp
+          :ensure t
+          :init (add-hook 'csharp-mode-hook 'omnisharp-mode)))
+    #+END_SRC
 
-      (eval-after-load "haskell-mode"
-        '(fill-keymap haskell-mode-map
-                      "C-x C-d" nil
-                      "C-c C-z" 'haskell-interactive-switch
-                      "C-c C-l" 'haskell-process-load-file
-                      "C-c C-b" 'haskell-interactive-switch
-                      "C-c C-t" 'haskell-process-do-type
-                      "C-c C-i" 'haskell-process-do-info
-                      "C-c M-." nil
-                      "C-c C-d" nil))
+*** Clojure
+    
+    #+BEGIN_SRC emacs-lisp
+      (use-package clojure-mode
+        :ensure t
+        :commands (clojure-mode clojurescript-mode)
+        :config
+        ;; On OSX, each Java process started by Cider or Leiningen will show up on
+        ;; the dock. The following option prevents that.
+        (setenv "LEIN_JVM_OPTS" "-Dapple.awt.UIElement=true")
+
+        ;; Set up some custom identation rules
+        (define-clojure-indent
+          (defroutes 'defun)
+          (GET 2)
+          (POST 2)
+          (PUT 2)
+          (DELETE 2)
+          (HEAD 2)
+          (ANY 2)
+          (context 2))
+
+        ;; Use symbols for 'fn', function literals, and sets.
+        (font-lock-add-keywords
+         'clojure-mode `(("(\\(fn\\)[\[[:space:]]"
+                          (0 (progn (compose-region (match-beginning 1)
+                                                    (match-end 1) "λ")
+                                    nil)))))
+        (font-lock-add-keywords
+         'clojure-mode `(("\\(#\\)("
+                          (0 (progn (compose-region (match-beginning 1)
+                                                    (match-end 1) "ƒ")
+                                    nil)))))
+        (font-lock-add-keywords
+         'clojure-mode `(("\\(#\\){"
+                          (0 (progn (compose-region (match-beginning 1)
+                                                    (match-end 1) "∈")
+                                    nil)))))
+
+        (use-package cider
+          :ensure t
+          :commands (cider-mode cider-repl-mode)
+          :init
+          (setq nrepl-hide-special-buffers t
+                cider-auto-select-error-buffer nil
+                cider-repl-result-prefix ";; => "
+                cider-repl-use-pretty-printing t
+                cider-repl-use-clojure-font-lock t)
+          (add-hook 'cider-mode-hook 'eldoc-mode)
+          :config
+
+          ;; Save buffer before testing or loading.
+          (defadvice clojure-test-run-tests (before save-first activate)
+            (save-buffer))
+          (defadvice cider-load-current-buffer (before save-first activate)
+            (save-buffer)))
+
+        (use-package ac-cider
+          :ensure t
+          :commands (ac-cider-setup)
+          :init
+          (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+          (add-hook 'cider-mode-hook 'ac-cider-setup)
+          (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+          (eval-after-load "auto-complete"
+            '(progn
+               (add-to-list 'ac-modes 'cider-mode)
+               (add-to-list 'ac-modes 'cider-repl-mode))))
+
+        (use-package cljsbuild-mode
+          :ensure t
+          :commands (cljsbuild-start)
+          :init
+          ;; Use "lein trampoline" when building Clojurescript, and hide the buffer when the
+          ;; build was successful.
+          (setq cljsbuild-hide-buffer-on-success t
+                cljsbuild-compile-command "lein trampoline cljsbuild auto")))
+
     #+END_SRC
 
 *** Javascript
 
-    Use js2-mode.
-
-    #+BEGIN_SRC emacs-lisp
-      (require 'js2-mode)
-
-      ;; Use js2-mode for Javascript
-      (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-
-      (add-hook 'js2-mode-hook
-                (lambda ()
-                  (autopair-on)))
-    #+END_SRC
-
-
-    Use 2 space indentation
-
-    #+BEGIN_SRC emacs-lisp
-      (setq js2-basic-offset 2)
-      (setq js-indent-level 2)
-    #+END_SRC
-
-*** Lua
-
-    #+BEGIN_SRC emacs-lisp
-      (require 'lua-mode)
-
-      (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
-      (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-      (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
-      (setq lua-indent-level 2)
-
-      (add-hook 'lua-mode-hook 'autopair-mode)
-    #+END_SRC
-    
-*** Python
-
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'python-mode-hook
-                (lambda ()
-                  (jedi:setup)
-                  (setq tab-width 4)))
-      (setq jedi:complete-on-dot t)
-    #+END_SRC
-
-
-    Support for virtualenv within Emacs.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq venv-location
-            (if (eq system-type 'darwin)
-                (exec-path-from-shell-getenv "WORKON_HOME")
-              (getenv "WORKON_HOME")))
-
-      (venv-initialize-eshell)
-    #+END_SRC
-
-
-    Install some commonly used packages after creating a new virtualenv.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'venv-postmkvirtualenv-hook
-                (lambda ()
-                  (shell-command "pip install jedi")))
-    #+END_SRC
-
-
-    Attempt to automatically switch to a project's virtualenv.
+    Use web-mode and js2-mode.
     
     #+BEGIN_SRC emacs-lisp
-      (add-hook 'python-mode-hook
-                (lambda ()
-                  (hack-local-variables)
-                  (when (boundp 'project-venv-name)
-                    (venv-workon project-venv-name))))
+      (use-package web-mode
+        :ensure t
+        :mode "\\.jsx$"
+        :commands web-mode
+        :init
+        (flycheck-add-mode 'javascript-eslint 'web-mode)
+        (setq web-mode-markup-indent-offset 2
+              web-mode-css-indent-offset 2
+              web-mode-code-indent-offset 2)
+        :config
+        (defadvice web-mode-highlight-part (around tweak-jsx-activate)
+          (if (equal web-mode-content-type "jsx")
+              (let ((web-mode-enable-part-face nil))
+                ad-do-it)
+            ad-do-it)))
+
+      (use-package js2-mode
+        :ensure t
+        :commands js2-mode
+        :init
+        (setq js-indent-level 2))
     #+END_SRC
 
-    Simply add the following to ~.dir-locals~ in your project root.
-    ~((python-mode . ((project-venv-name . "myproject-env"))))~
+    Disable jshint in favor of eslint.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq-default flycheck-disabled-checkers
+                    (append flycheck-disabled-checkers
+                            '(javascript-jshint)))
+    #+END_SRC
+
     
-*** Racket
-
+    Enable NVM support.
+    
     #+BEGIN_SRC emacs-lisp
-      (require 'racket-mode)
-
-      (add-hook 'racket-mode-hook
-                (lambda ()
-                  (autopair-mode 1)
-                  (paredit-mode 1)
-                  (local-set-key (kbd "RET") 'newline-and-indent)))
+      (use-package nvm
+        :ensure t
+        :defer 5
+        :config
+        (nvm-use (caar (last (nvm--installed-versions)))))
     #+END_SRC
 
-*** Typescript
-
+    
+    Check for a local eslint after switching Projectile projects.
+    
     #+BEGIN_SRC emacs-lisp
-      (require 'typescript)
-      (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+      (defun setup-local-eslint ()
+        "If ESLint found in node_modules directory, use that for flycheck."
+        (interactive)
+        (let ((local-eslint (expand-file-name "./node_modules/.bin/eslint")))
+          (setq flycheck-javascript-eslint-executable
+                (and (file-exists-p local-eslint) local-eslint))))
 
-      (require 'tss)
-      (setq tss-popup-help-key "C-:"
-            tss-jump-to-definition-key "C->")
-
-      (tss-config-default)
-    #+END_SRC
-
-*** Rust
-
-    Grab the necessary environment variables for Racer.
-
-    #+BEGIN_SRC emacs-lisp
-      (when (eq (window-system) 'ns)
-        (exec-path-from-shell-copy-envs '("RUST_SRC_PATH" "RACER_CMD" "RACER_DIR")))
-
-      (setq racer-rust-src-path (getenv "RUST_SRC_PATH")
-            racer-cmd           (getenv "RACER_CMD"))
-
-    #+END_SRC
-
-
-    Setup Racer to provide auto completion using company.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'load-path (expand-file-name "editors/emacs" (getenv "RACER_DIR")))
-      (eval-after-load "rust-mode" '(require 'racer))
+      (add-hook 'projectile-after-switch-project-hook 'setup-local-eslint)
     #+END_SRC
