@@ -743,9 +743,9 @@
          'clojure-mode `(("\\(#\\){"
                           (0 (progn (compose-region (match-beginning 1)
                                                     (match-end 1) "∈")
-                                    nil)))))
+                                    nil))))))
 
-        (use-package cider
+      (use-package cider
           :ensure t
           :commands (cider-mode cider-repl-mode)
           :init
@@ -763,27 +763,26 @@
           (defadvice cider-load-current-buffer (before save-first activate)
             (save-buffer)))
 
-        (use-package ac-cider
-          :ensure t
-          :commands (ac-cider-setup)
-          :init
-          (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-          (add-hook 'cider-mode-hook 'ac-cider-setup)
-          (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-          (eval-after-load "auto-complete"
-            '(progn
-               (add-to-list 'ac-modes 'cider-mode)
-               (add-to-list 'ac-modes 'cider-repl-mode))))
+      (use-package ac-cider
+        :ensure t
+        :commands (ac-cider-setup)
+        :init
+        (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+        (add-hook 'cider-mode-hook 'ac-cider-setup)
+        (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+        (eval-after-load "auto-complete"
+          '(progn
+             (add-to-list 'ac-modes 'cider-mode)
+             (add-to-list 'ac-modes 'cider-repl-mode))))
 
-        (use-package cljsbuild-mode
-          :ensure t
-          :commands (cljsbuild-start)
-          :init
-          ;; Use "lein trampoline" when building Clojurescript, and hide the buffer when the
-          ;; build was successful.
-          (setq cljsbuild-hide-buffer-on-success t
-                cljsbuild-compile-command "lein trampoline cljsbuild auto")))
-
+      (use-package cljsbuild-mode
+        :ensure t
+        :commands (cljsbuild-start)
+        :init
+        ;; Use "lein trampoline" when building Clojurescript, and hide the buffer when the
+        ;; build was successful.
+        (setq cljsbuild-hide-buffer-on-success t
+              cljsbuild-compile-command "lein trampoline cljsbuild auto"))
     #+END_SRC
 
 *** Javascript
