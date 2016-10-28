@@ -825,11 +825,12 @@
     Enable NVM support.
     
     #+BEGIN_SRC emacs-lisp
-      (use-package nvm
-        :ensure t
-        :defer 5
-        :config
-        (nvm-use (caar (last (nvm--installed-versions)))))
+      (when (file-exists-p "~/.nvm")
+        (use-package nvm
+          :ensure t
+          :defer 5
+          :config
+          (nvm-use (caar (last (nvm--installed-versions))))))
     #+END_SRC
 
     
