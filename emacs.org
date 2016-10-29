@@ -272,6 +272,7 @@
                 ("C-h C-f"   . helm-apropos)
                 ("C-h a"     . helm-apropos)
                 ("C-s"       . helm-occur))
+         :init (setq helm-M-x-fuzzy-match t)
          :config
          (require 'helm-config)
          (helm-mode)
