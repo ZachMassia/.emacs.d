@@ -30,9 +30,10 @@
   Make sure the theme is available before loading the customize file.
   
   #+BEGIN_SRC emacs-lisp
-    (use-package solarized-theme
+    (use-package dracula-theme
       :ensure t
-      :demand)
+      :demand
+      :config (load-theme 'dracula t))
   #+END_SRC
     
 
@@ -224,6 +225,17 @@
        :defer 2
        :config (editorconfig-mode))
    #+END_SRC
+
+
+   Use paradox as a replacement to the built-in package menu.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package paradox
+       :ensure t
+       :defer 10)
+   #+END_SRC
+
+
 
 **** Projectile
      #+BEGIN_SRC emacs-lisp
