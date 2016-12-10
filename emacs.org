@@ -435,7 +435,20 @@
                                            (unless (eq ibuffer-sorting-mode 'alphabetic)
                                              (ibuffer-do-sort-by-alphabetic)))))
      #+END_SRC
+
+**** Markdown
      
+     Install `markdown-mode`
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package markdown-mode
+         :ensure t
+         :commands (markdown-mode gfm-mode)
+         :mode (("README\\.md\\'" . gfm-mode)
+                ("\\.md\\'" . markdown-mode)
+                ("\\.markdown\\'" . markdown-mode)))
+     #+END_SRC
+
 ** Backup  
    
    Some backup settings. These should be cleaned up in the future.
@@ -811,7 +824,8 @@
         (flycheck-add-mode 'javascript-eslint 'web-mode)
         (setq web-mode-markup-indent-offset 2
               web-mode-css-indent-offset 2
-              web-mode-code-indent-offset 2)
+              web-mode-code-indent-offset 2
+              web-mode-indent-style 2)
         :config
         (defadvice web-mode-highlight-part (around tweak-jsx-activate)
           (if (equal web-mode-content-type "jsx")
