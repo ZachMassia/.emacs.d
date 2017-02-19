@@ -204,6 +204,14 @@
                  "C-j"     'newline-and-indent)
   #+END_SRC   
 
+  Make Emacs aware of Pyenv Python installations.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package pyenv-mode
+      :ensure t
+      :commands (pyenv-mode pyenv-mode-set))
+  #+END_SRC
+
 ** General package configuration
 
    #+BEGIN_SRC emacs-lisp
@@ -683,7 +691,9 @@
       (use-package platformio-mode
         :ensure t
         :commands (platformio-conditionally-enable)
-        :config (platformio-setup-compile-buffer))
+        :config
+        (pyenv-mode)
+        (pyenv-mode-set "platformio-python"))
 
       (defun irony-and-platformio-hook ()
         (irony-mode)
