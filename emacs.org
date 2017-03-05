@@ -16,6 +16,7 @@
      - [[#c-1][C#]]
      - [[#clojure][Clojure]]
      - [[#javascript][Javascript]]
+     - [[#rust][Rust]]
 
 * Basic Setup
 
@@ -531,9 +532,9 @@
         :ensure t
         :commands (rainbow-delimiters-mode))
 
-      (use-package autopair
+      (use-package smartparens
         :ensure t
-        :commands (autopair-mode))
+        :commands (smartparens-mode smartparens-strict-mode))
 
       (dolist (mode programming-language-major-modes)
         (add-hook
@@ -542,7 +543,7 @@
            (fic-mode)
            (rainbow-delimiters-mode)
            (whitespace-mode)
-           (autopair-mode))))
+           (smartparens-strict-mode))))
     #+END_SRC
 
 
@@ -646,7 +647,6 @@
         "Enable some packages for any elisp related buffer."
         (eldoc-mode)
         (paredit-mode)
-        (autopair-mode)
         (rainbow-delimiters-mode)
         (pretty-lambda-mode))
 
@@ -698,6 +698,8 @@
       (defun irony-and-platformio-hook ()
         (irony-mode)
         (irony-eldoc)
+        (auto-complete-mode -1)
+        (company-mode)
         (platformio-conditionally-enable))
 
       (add-hook 'c-mode-hook 'irony-and-platformio-hook)
@@ -882,4 +884,32 @@
                 (and (file-exists-p local-eslint) local-eslint))))
 
       (add-hook 'projectile-after-switch-project-hook 'setup-local-eslint)
+    #+END_SRC
+*** Rust
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package rust-mode
+        :ensure t
+        :commands rust-mode
+        :mode "\\.rs\\'"
+        :config (setq rust-format-on-save t))
+
+      (use-package racer
+        :ensure t
+        :commands racer-mode
+        :init
+        (add-hook 'rust-mode-hook (lambda ()
+                                    (racer-mode)
+                                    (eldoc-mode)
+                                    (auto-complete-mode -1)
+                                    (company-mode))))
+
+      (use-package flycheck-rust
+        :ensure t
+        :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+      (use-package cargo
+        :ensure t
+        :commands cargo-minor-mode
+        :init (add-hook 'rust-mode-hook 'cargo-minor-mode))
     #+END_SRC
