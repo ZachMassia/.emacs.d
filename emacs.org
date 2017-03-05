@@ -317,6 +317,7 @@
      #+BEGIN_SRC emacs-lisp
        (use-package auto-complete
          :ensure t
+         :commands auto-complete-mode
          :init
          (setq ac-auto-start 0
                ac-quick-help-delay 0.5
@@ -325,9 +326,25 @@
                ac-auto-show-menu 0.2)
          :config
          (add-to-list 'ac-dictionary-directories (concat user-emacs-directory "ac-dict"))
-         (ac-config-default)
-         (global-auto-complete-mode))
+         (ac-config-default))
      #+END_SRC
+
+         
+    #+BEGIN_SRC emacs-lisp
+      (use-package company
+        :ensure t
+        :commands company-mode
+        :init
+        ;; Set company-mode to try and complete instantly
+        (setq company-idle-delay 0)
+        :config
+        (use-package company-irony
+          :ensure t
+          :init (add-to-list 'company-backends 'company-irony))
+        (use-package company-c-headers
+          :ensure t
+          :init (add-to-list 'company-backends 'company-c-headers)))
+    #+END_SRC
 
 **** Org
 
@@ -613,22 +630,6 @@
     #+END_SRC
 
 *** Emacs Lisp
-    
-    Setup auto complete for elisp.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
-
-      (defun ielm-auto-complete ()
-        "Enables `auto-complete' support in \\[ielm]."
-        (setq ac-sources '(ac-source-functions
-                           ac-source-variables
-                           ac-source-features
-                           ac-source-symbols
-                           ac-source-words-in-same-mode-buffers))
-        (add-to-list 'ac-modes 'inferior-emacs-lisp-mode))
-      (add-hook 'ielm-mode-hook 'ielm-auto-complete)
-    #+END_SRC
 
     Enable a few packages for elisp-related modes.
 
@@ -648,7 +649,10 @@
         (eldoc-mode)
         (paredit-mode)
         (rainbow-delimiters-mode)
-        (pretty-lambda-mode))
+        (pretty-lambda-mode)
+        (smartparens-mode -1)
+        (auto-complete-mode -1)
+        (company-mode))
 
       (dolist (mode elisp-programming-major-modes)
         (add-hook (intern (concat (symbol-name mode) "-hook"))
@@ -656,26 +660,6 @@
     #+END_SRC
 
 *** C++
-    
-    Configure company and add the required company backends.
-    
-    #+BEGIN_SRC emacs-lisp
-      (use-package company
-        :ensure t
-        :commands (company-mode)
-        :init
-        ;; Set company-mode to try and complete instantly.
-        (setq company-idle-delay 0)
-        :config
-        (use-package company-irony
-          :ensure t
-          :init (add-to-list 'company-backends 'company-irony))
-
-        (use-package company-c-headers
-          :ensure t
-          :init (add-to-list 'company-backends 'company-c-headers)))
-    #+END_SRC
-
 
     Add irony-mode and platformio-mode to c/c++ mode.
     
@@ -755,6 +739,18 @@
         ;; the dock. The following option prevents that.
         (setenv "LEIN_JVM_OPTS" "-Dapple.awt.UIElement=true")
 
+
+        (add-hook 'clojure-mode-hook
+                  (lambda ()
+                    ;; Disable smartparens in favor of paredit
+                    (smartparens-mode -1)
+                    (paredit-mode)
+
+                    ;; Make sure Eldoc and Company are running
+                    (auto-complete-mode -1)
+                    (company-mode)
+                    (eldoc-mode)))
+
         ;; Set up some custom identation rules
         (define-clojure-indent
           (defroutes 'defun)
@@ -792,7 +788,12 @@
                 cider-repl-result-prefix ";; => "
                 cider-repl-use-pretty-printing t
                 cider-repl-use-clojure-font-lock t)
-          (add-hook 'cider-mode-hook 'eldoc-mode)
+          (add-hook 'cider-mode-hook (lambda ()
+                                       (eldoc-mode)
+                                       (company-mode)))
+          (add-hook 'cider-repl-mode-hook (lambda ()
+                                            (eldoc-mode)
+                                            (company-mode)))
           :config
 
           ;; Save buffer before testing or loading.
@@ -800,18 +801,6 @@
             (save-buffer))
           (defadvice cider-load-current-buffer (before save-first activate)
             (save-buffer)))
-
-      (use-package ac-cider
-        :ensure t
-        :commands (ac-cider-setup)
-        :init
-        (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-        (add-hook 'cider-mode-hook 'ac-cider-setup)
-        (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-        (eval-after-load "auto-complete"
-          '(progn
-             (add-to-list 'ac-modes 'cider-mode)
-             (add-to-list 'ac-modes 'cider-repl-mode))))
 
       (use-package cljsbuild-mode
         :ensure t
