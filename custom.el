@@ -13,7 +13,7 @@
  '(linum-format " %7i ")
  '(package-selected-packages
    (quote
-    (cargo flycheck-rust racer smartparens rust-mode pyenv-mode paradox markdown-mode helm-projectile js2-mode web-mode nvm cljsbuild-mode ac-cider cider-eldoc omnisharp clojure-mode cider csharp-mode flycheck-irony platformio-mode irony-eldoc company-c-headers company-irony pretty-lambdada pretty-lambda autopair flycheck-package rainbow-delimiters fic-mode ibuffer-vc paredit toc-org auto-complete helm-flycheck helm-flx helm-company projectile editorconfig magit exec-path-from-shell git-gutter-fringe use-package))))
+    (solarized-theme cargo flycheck-rust racer smartparens rust-mode pyenv-mode paradox markdown-mode helm-projectile js2-mode web-mode nvm cljsbuild-mode ac-cider cider-eldoc omnisharp clojure-mode cider csharp-mode flycheck-irony platformio-mode irony-eldoc company-c-headers company-irony pretty-lambdada pretty-lambda autopair flycheck-package rainbow-delimiters fic-mode ibuffer-vc paredit toc-org auto-complete helm-flycheck helm-flx helm-company projectile editorconfig magit exec-path-from-shell git-gutter-fringe use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

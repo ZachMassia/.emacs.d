@@ -31,10 +31,15 @@
   Make sure the theme is available before loading the customize file.
   
   #+BEGIN_SRC emacs-lisp
-    (use-package dracula-theme
+    ;; (use-package dracula-theme
+    ;;   :ensure t
+    ;;   :demand
+    ;;   :config (load-theme 'dracula t))
+
+    (use-package solarized-theme
       :ensure t
       :demand
-      :config (load-theme 'dracula t))
+      :config (load-theme 'solarized-light))
   #+END_SRC
     
 
@@ -793,7 +798,8 @@
                                        (company-mode)))
           (add-hook 'cider-repl-mode-hook (lambda ()
                                             (eldoc-mode)
-                                            (company-mode)))
+                                            (company-mode)
+                                            (paredit-mode)))
           :config
 
           ;; Save buffer before testing or loading.
