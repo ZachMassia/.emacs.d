@@ -31,18 +31,12 @@
   Make sure the theme is available before loading the customize file.
   
   #+BEGIN_SRC emacs-lisp
-    ;; (use-package dracula-theme
-    ;;   :ensure t
-    ;;   :demand
-    ;;   :config (load-theme 'dracula t))
-
-    (use-package solarized-theme
+    (use-package dracula-theme
       :ensure t
       :demand
-      :config (load-theme 'solarized-light))
+      :config (load-theme 'dracula t))
   #+END_SRC
     
-
   Move the customize config to it's own file.
   
   #+BEGIN_SRC emacs-lisp
@@ -480,6 +474,34 @@
                 ("\\.markdown\\'" . markdown-mode)))
      #+END_SRC
 
+**** NeoTree
+
+     #+BEGIN_SRC emacs-lisp
+       (defun neotree-project-dir ()
+         "Open NeoTree using the git root."
+         (interactive)
+         (let ((project-dir (projectile-project-root))
+               (file-name   (buffer-file-name)))
+           (neotree-toggle)
+           (if project-dir
+               (if (neo-global--window-exists-p)
+                   (progn
+                     (neotree-dir project-dir)
+                     (neotree-find file-name)))
+             (message "Could not find git project root."))))
+
+       (use-package neotree
+         :ensure t
+         :commands neotree-toggle
+         :bind ("M-\\" . neotree-project-dir)
+         :config
+         (use-package all-the-icons
+           :ensure t)
+         (setq neo-theme (if (display-graphic-p)
+                             'icons
+                           'arrow)))
+     #+END_SRC
+
 ** Backup  
    
    Some backup settings. These should be cleaned up in the future.
@@ -843,6 +865,10 @@
       (use-package js2-mode
         :ensure t
         :commands js2-mode
+        :mode (("\\.js$" . js2-mode)
+               ("\\.es6$" . js2-mode)
+               ("\\.ejs$" . js2-mode))
+        :interpreter "node"
         :init
         (setq js-indent-level 2))
     #+END_SRC
