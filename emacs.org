@@ -2,21 +2,22 @@
 #+AUTHOR: Zachary Massia
 
 * Table of Contents                                                     :TOC_3:
- - [[#basic-setup][Basic Setup]]
- - [[#ui][UI]]
-   - [[#font][Font]]
- - [[#misc][Misc]]
-   - [[#general-package-configuration][General package configuration]]
-   - [[#backup][Backup]]
-   - [[#convenience-functions][Convenience functions]]
- - [[#programming-packages][Programming Packages]]
-     - [[#general-setup][General Setup]]
-     - [[#emacs-lisp][Emacs Lisp]]
-     - [[#c][C++]]
-     - [[#c-1][C#]]
-     - [[#clojure][Clojure]]
-     - [[#javascript][Javascript]]
-     - [[#rust][Rust]]
+- [[#basic-setup][Basic Setup]]
+- [[#ui][UI]]
+  - [[#font][Font]]
+- [[#misc][Misc]]
+  - [[#general-package-configuration][General package configuration]]
+  - [[#backup][Backup]]
+  - [[#convenience-functions][Convenience functions]]
+- [[#programming-packages][Programming Packages]]
+    - [[#general-setup][General Setup]]
+    - [[#emacs-lisp][Emacs Lisp]]
+    - [[#c][C++]]
+    - [[#c-1][C#]]
+    - [[#clojure][Clojure]]
+    - [[#javascript][Javascript]]
+    - [[#rust][Rust]]
+    - [[#haskell][Haskell]]
 
 * Basic Setup
 
@@ -136,7 +137,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (pcase system-type
-       (`darwin     (set-frame-font "SF Mono-12"))
+       (`darwin     (set-frame-font "SF Mono-11:weight=light"))
        (`gnu/linux  (set-frame-font "Meslo LG M 10"))
        (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
@@ -502,6 +503,15 @@
                            'arrow)))
      #+END_SRC
 
+**** Ledger
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package ledger-mode
+         :ensure t
+         :commands ledger-mode)
+     #+END_SRC
+     
+
 ** Backup  
    
    Some backup settings. These should be cleaned up in the future.
@@ -578,7 +588,8 @@
 
       (use-package smartparens
         :ensure t
-        :commands (smartparens-mode smartparens-strict-mode))
+        :commands (smartparens-mode smartparens-strict-mode)
+        :config (require 'smartparens-config))
 
       (dolist (mode programming-language-major-modes)
         (add-hook
@@ -587,7 +598,7 @@
            (fic-mode)
            (rainbow-delimiters-mode)
            (whitespace-mode)
-           (smartparens-strict-mode))))
+           (smartparens-mode))))
     #+END_SRC
 
 
@@ -654,6 +665,15 @@
 
     #+BEGIN_SRC emacs-lisp
       (setq c-default-style "stroustrup")
+    #+END_SRC
+
+    Support for `*.toml` files.
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package toml-mode
+        :ensure t
+        :defer 10
+        :commands toml-mode)
     #+END_SRC
 
 *** Emacs Lisp
@@ -932,5 +952,20 @@
       (use-package cargo
         :ensure t
         :commands cargo-minor-mode
-        :init (add-hook 'rust-mode-hook 'cargo-minor-mode))
+        :init
+        (add-hook 'rust-mode-hook 'cargo-minor-mode)
+        (setq compilation-scroll-output t))
     #+END_SRC
+
+*** Haskell
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package intero
+        :ensure t
+        :commands intero-mode
+        :init
+        (add-hook 'haskell-mode-hook 'intero-mode)
+        :config
+        (auto-complete-mode -1)
+        (company-mode))
+    #+END_SRC    
