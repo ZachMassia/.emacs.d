@@ -687,10 +687,6 @@
           ielm-mode)
         "Modes that are used to do Elisp programming.")
 
-      (use-package pretty-lambdada
-        :ensure t
-        :commands (pretty-lambda-mode))
-
       (defun my-elisp-setup ()
         "Enable some packages for any elisp related buffer."
         (eldoc-mode)
