@@ -364,6 +364,12 @@
          :commands toc-org-enable
          :init (add-hook 'org-mode-hook 'toc-org-enable))
      #+END_SRC
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package org-journal
+         :ensure t
+         (setq org-startup-indented t))
+     #+END_SRC
      
 **** Paredit
 
@@ -692,7 +698,6 @@
         (eldoc-mode)
         (paredit-mode)
         (rainbow-delimiters-mode)
-        (pretty-lambda-mode)
         (smartparens-mode -1)
         (auto-complete-mode -1)
         (company-mode))
