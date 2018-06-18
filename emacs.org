@@ -368,7 +368,12 @@
      #+BEGIN_SRC emacs-lisp
        (use-package org-journal
          :ensure t
-         :init (setq org-startup-indented t))
+         :config
+         (setq org-startup-indented t)
+
+         (let ((j-dir (cond ((eq system-type 'darwin) "~/Dropbox/org-journals")
+                            ((eq system-type 'windows-nt) "~/../../Dropbox/org-journals/"))))
+           (setq org-journal-dir j-dir)))
      #+END_SRC
      
 **** Paredit
