@@ -368,7 +368,7 @@
      #+BEGIN_SRC emacs-lisp
        (use-package org-journal
          :ensure t
-         (setq org-startup-indented t))
+         :init (setq org-startup-indented t))
      #+END_SRC
      
 **** Paredit
