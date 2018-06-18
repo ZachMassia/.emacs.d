@@ -30,3 +30,6 @@ ido.last
 smex-items
 irony/
 *.elc
+.#init.el
+async-bytecomp.log
+server/
