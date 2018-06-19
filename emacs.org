@@ -365,6 +365,9 @@
          :init (add-hook 'org-mode-hook 'toc-org-enable))
      #+END_SRC
 
+     Enable journal mode, always in indented mode.
+     The journal dir is set based on OS, and all journals added to the org-agenda-files list.
+     
      #+BEGIN_SRC emacs-lisp
        (use-package org-journal
          :ensure t
@@ -373,7 +376,8 @@
 
          (let ((j-dir (cond ((eq system-type 'darwin) "~/Dropbox/org-journals")
                             ((eq system-type 'windows-nt) "~/../../Dropbox/org-journals/"))))
-           (setq org-journal-dir j-dir)))
+           (setq org-journal-dir j-dir)
+           (add-to-list 'org-agenda-files j-dir)))
      #+END_SRC
      
 **** Paredit

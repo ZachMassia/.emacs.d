@@ -13,7 +13,7 @@
  '(linum-format " %7i ")
  '(org-journal-carryover-items "nil")
  '(org-journal-dir "~/../../Dropbox/org-journals/")
- '(org-journal-enable-agenda-integration t)
+ '(org-journal-enable-agenda-integration nil)
  '(org-journal-file-format "%Y%m%d.org")
  '(package-selected-packages
    (quote
