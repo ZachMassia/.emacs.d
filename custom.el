@@ -13,8 +13,9 @@
  '(linum-format " %7i ")
  '(org-journal-carryover-items "nil")
  '(org-journal-dir "~/../../Dropbox/org-journals/")
- '(org-journal-enable-agenda-integration t)
+ '(org-journal-enable-agenda-integration nil)
  '(org-journal-file-format "%Y%m%d.org")
+ '(org-journal-time-format "%I:%M | ")
  '(package-selected-packages
    (quote
     (ssh-agency org-journal ledger-mode toml-mode intero nord-theme nord all-the-icons neotree solarized-theme cargo flycheck-rust racer smartparens rust-mode pyenv-mode paradox markdown-mode helm-projectile js2-mode web-mode nvm cljsbuild-mode ac-cider cider-eldoc omnisharp clojure-mode cider csharp-mode flycheck-irony platformio-mode irony-eldoc company-c-headers company-irony pretty-lambdada pretty-lambda autopair flycheck-package rainbow-delimiters fic-mode ibuffer-vc paredit toc-org auto-complete helm-flycheck helm-flx helm-company projectile editorconfig magit exec-path-from-shell git-gutter-fringe use-package)))

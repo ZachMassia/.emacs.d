@@ -373,7 +373,8 @@
 
          (let ((j-dir (cond ((eq system-type 'darwin) "~/Dropbox/org-journals")
                             ((eq system-type 'windows-nt) "~/../../Dropbox/org-journals/"))))
-           (setq org-journal-dir j-dir)))
+           (setq org-journal-dir j-dir)
+           (add-to-list 'org-agenda-files j-dir)))
      #+END_SRC
      
 **** Paredit
