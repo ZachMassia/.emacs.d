@@ -137,7 +137,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (pcase system-type
-       (`darwin     (set-frame-font "SF Mono-11:weight=light"))
+       (`darwin     (set-frame-font "Iosevka-13:weight=regular"))
        (`gnu/linux  (set-frame-font "Meslo LG M 10"))
        (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
 
@@ -168,6 +168,7 @@
       :if (eq system-type 'darwin)
       :init
       (setq exec-path-from-shell-check-startup-files nil
+            frame-resize-pixelwise t ;; Prevent's gaps using --with-no-titlebar
             mac-option-modifier 'super
             mac-command-modifier 'meta) ;; Use cmd as meta.
       :config
