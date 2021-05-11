@@ -16,7 +16,6 @@
     - [[#clojure][Clojure]]
     - [[#javascript][Javascript]]
     - [[#rust][Rust]]
-    - [[#haskell][Haskell]]
 
 * Basic Setup
 
@@ -138,7 +137,7 @@
      (pcase system-type
        (`darwin     (set-frame-font "Iosevka-13:weight=regular"))
        (`gnu/linux  (set-frame-font "Meslo LG M 10"))
-       (`windows-nt (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")))
+       (`windows-nt (set-frame-font "Cascadia Code 9")))
 
      (setq-default line-spacing 3)
    #+END_SRC
@@ -983,16 +982,3 @@ Use lsp-mode and lsp-ui-mode.
     (lsp-ui-sideline-show-hover t)
     (lsp-ui-doc-enable nil))
 #+end_src
-
-*** Haskell
-
-    #+BEGIN_SRC emacs-lisp
-      (use-package intero
-        :ensure t
-        :commands intero-mode
-        :init
-        (add-hook 'haskell-mode-hook 'intero-mode)
-        :config
-        (auto-complete-mode -1)
-        (company-mode))
-    #+END_SRC    
