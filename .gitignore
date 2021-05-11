@@ -33,3 +33,4 @@ irony/
 .#init.el
 async-bytecomp.log
 server/
+transient/history.el
